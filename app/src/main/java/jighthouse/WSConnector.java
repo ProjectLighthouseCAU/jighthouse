@@ -2,8 +2,8 @@ package jighthouse;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import org.java_websocket.client.*;
-import org.java_websocket.drafts.Draft_6455;
+//import org.java_websocket.client.*;
+//import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 
 import java.net.URI;
@@ -49,7 +49,7 @@ public class WSConnector {
      * Send a payload to websocket server
      * @param data
      */
-    public void send(Object data) {
+    public void sendPAYL(Object data) {
         try {
             LhPayload msg = new LhPayload(0, username, token, null);
             byte[] packagedData = msg.toByteArray();

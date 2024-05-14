@@ -3,6 +3,7 @@ package jighthouse;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import org.java_websocket.client.*;
+import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 
 import java.net.URI;
@@ -16,8 +17,7 @@ public class WSConnector {
     private String username;
     private String token;
     private String address;
-    private LhWebsockClient listener;
-    private WebSocketClient ws;
+    private LhWebsockClient ws;
 
     /**
      * Create a new websocket client.
@@ -39,8 +39,7 @@ public class WSConnector {
             Map<String, String> headers = new HashMap<>();
             headers.put("Authorization", "Bearer " + token);
             headers.put("User", username);
-            ws = new LhWebsockClient(uri, null);
-
+            this.ws = new LhWebsockClient(uri, headers);
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
         }

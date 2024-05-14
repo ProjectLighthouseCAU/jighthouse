@@ -1,18 +1,20 @@
 package jighthouse;
 
 import java.net.URI;
+import java.util.Map;
 //import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 
 import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.drafts.Draft;
+//import org.java_websocket.drafts.Draft;
+import org.java_websocket.drafts.Draft_6455;
 //import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ServerHandshake;
 
 public class LhWebsockClient extends WebSocketClient {
 
-	public LhWebsockClient(URI serverUri, Draft draft) {
-		super(serverUri, draft);
+	public LhWebsockClient(URI serverUri, Map<String, String> headers) {
+		super(serverUri, new Draft_6455(), headers, 0);
 	}
 
 	public LhWebsockClient(URI serverURI) {
@@ -21,7 +23,7 @@ public class LhWebsockClient extends WebSocketClient {
 
 	@Override
 	public void onOpen(ServerHandshake handshakedata) {
-		send("Hello, it is me. Mario :)");
+		// TODO: send("...");
 		System.out.println("new connection opened");
 	}
 

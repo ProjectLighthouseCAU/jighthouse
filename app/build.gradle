@@ -28,6 +28,8 @@ dependencies {
 
 application {
     // Define the main class for the application.
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
     mainClass = 'jighthouse.App'
 }
 

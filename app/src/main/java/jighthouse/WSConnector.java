@@ -17,7 +17,7 @@ public class WSConnector {
     private String username;
     private String token;
     private String address;
-    private LhWebsockClient ws;
+    private JhWebsockClient ws;
 
     /**
      * Create a new websocket client.
@@ -39,7 +39,7 @@ public class WSConnector {
             Map<String, String> headers = new HashMap<>();
             headers.put("Authorization", "Bearer " + token);
             headers.put("User", username);
-            this.ws = new LhWebsockClient(uri, headers);
+            this.ws = new JhWebsockClient(uri, headers);
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
         }
@@ -51,7 +51,7 @@ public class WSConnector {
      */
     public void sendPAYL(Object data) {
         try {
-            LhPayload msg = new LhPayload(0, username, token, null);
+            JhPackage msg = new JhPackage(0, username, token, null);
             byte[] packagedData = msg.toByteArray();
             if (packagedData != null) {
                 ws.send(ByteBuffer.wrap(packagedData));

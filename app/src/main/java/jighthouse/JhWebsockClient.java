@@ -23,27 +23,27 @@ public class JhWebsockClient extends WebSocketClient {
 	@Override
 	public void onOpen(ServerHandshake handshakedata) {
 		// TODO: send("...");
-		System.out.println("new connection opened");
+		System.out.println("WS connection to " + super.uri.toString() + " opened.");
 	}
 
 	@Override
 	public void onClose(int code, String reason, boolean remote) {
-		System.out.println("closed with exit code " + code + " additional info: " + reason);
+		System.out.println("WS connection closed with exit code " + code + "\nAdditional info: " + reason);
 	}
 
 	@Override
 	public void onMessage(String message) {
-		System.out.println("received message: " + message);
+		System.out.println("WS Received message: " + message);
 	}
 
 	@Override
 	public void onMessage(ByteBuffer message) {
-		System.out.println("received ByteBuffer");
+		System.out.println("WS Received ByteBuffer");
 	}
 
 	@Override
 	public void onError(Exception ex) {
-		System.err.println("an error occurred:" + ex);
+		System.err.println("WS: an error occurred:" + ex);
 	}
 
 }

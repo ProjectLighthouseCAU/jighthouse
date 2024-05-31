@@ -22,7 +22,6 @@ public class JhWebsockClient extends WebSocketClient {
 
 	@Override
 	public void onOpen(ServerHandshake handshakedata) {
-		// TODO: send("...");
 		System.out.println("WS connection to " + super.uri.toString() + " opened.");
 	}
 
@@ -38,6 +37,7 @@ public class JhWebsockClient extends WebSocketClient {
 
 	@Override
 	public void onMessage(ByteBuffer message) {
+		// TODO: Decode the message
 		System.out.println("WS Received ByteBuffer");
 	}
 

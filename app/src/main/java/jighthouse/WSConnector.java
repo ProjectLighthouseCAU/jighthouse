@@ -99,6 +99,21 @@ public class WSConnector extends Thread {
         }
     }
 
+    /**
+     * Method to make this thread sleep an amount of milliseconds.
+     * The try-catch block is too cluttering to use "Thread.sleep" directly.
+     * @param millis
+     */
+    private void waitMillis(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            System.out.println("WS Thread was interrupted!");
+            Thread.currentThread().interrupt();
+            this.isRunning = false;
+        }
+    }
+
     @Override
     public void run() {
         // Try to connect to server
@@ -117,26 +132,18 @@ public class WSConnector extends Thread {
             // 1. Try to get a frame from the queue
             synchronized (monitor) {
                 while (reqQueue.isEmpty()) {
-                    try {
-                        Thread.sleep(1);
-                        timeSinceReq += 1;
+                    waitMillis(1);
+                    timeSinceReq += 1;
 
-                        // 1b. Repeat last image after 1s to avoid timeout
-                        if (timeSinceReq >= 1000 && image != null) {
-                            sendImage(image);
-                            timeSinceReq = 0;
-                        }
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        Thread.currentThread().interrupt();
-                        this.isRunning = false;
+                    // 1b. Repeat last image after 1s to avoid timeout
+                    if (timeSinceReq > 1000 && image != null) {
+                        sendImage(image);
+                        timeSinceReq = 0;
                     }
                 }
             }
             JhFrameObject frame = reqQueue.poll();
             image = frame.getImage();
-            
             
             // 2. Send image, set isConnected to return val of sendPAYL
             if (image != null) {
@@ -148,8 +155,11 @@ public class WSConnector extends Thread {
 
 
     
-            // TODO 4. Sleep depending on framerate, with small negative offset
-
+            // 4. Sleep depending on framerate, with small negative offset.
+            // Offset is needed to keep the queue from filling.
+            if (waitPeriod > 2) {
+                waitMillis(waitPeriod - 2);
+            }
         }
 
         // Disconnect from server

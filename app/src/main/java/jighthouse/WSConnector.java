@@ -32,10 +32,12 @@ public class WSConnector extends Thread {
      * @param url
      * @param listener
      */
-    public WSConnector(String username, String token, String address) {
-        this.username = username;
-        this.token = token;
-        this.address = address;
+    public WSConnector(String username, String token, String address, 
+        Queue<JhFrameObject> reqQueue) {
+        this.username   = username;
+        this.token      = token;
+        this.address    = address;
+        this.reqQueue   = reqQueue;
     }
 
     /**

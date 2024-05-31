@@ -22,6 +22,7 @@ public class Jighthouse {
 
     // Queue
     private Queue<JhFrameObject> frameQueue;
+    private WSConnector wsThread;
 
     /**
      * Constructor for Jighthouse class.
@@ -56,8 +57,12 @@ public class Jighthouse {
      * Initializes the Jighthouse.
      */
     public void start() {
+        this.isRunning = true;
+        // Create Queue and Thread
         this.frameQueue = new ConcurrentLinkedQueue<>();
-        // TODO init and run thread
+        this.wsThread = new WSConnector(username, token, address, frameQueue);
+        // Start thread
+        this.wsThread.start();
     }
 
     /**
@@ -93,6 +98,7 @@ public class Jighthouse {
      * Tells the Jighthouse to disconnect from the server.
      */
     public void stop() {
-        // TODO: implement
+        this.wsThread.stopThread();
+        this.isRunning = false;
     }
 }

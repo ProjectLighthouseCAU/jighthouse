@@ -141,8 +141,9 @@ public class WSConnector extends Thread {
                     timeSinceReq = 0;
                 }
             }
-            
             JhFrameObject frame = frameQueue.poll();
+            // Empty the whole queue, get newest frame
+            while (!frameQueue.isEmpty()) frame = frameQueue.poll();
             image = frame.getImage();
             
             // 2. Send image, set isConnected to return val of sendPAYL
@@ -156,7 +157,7 @@ public class WSConnector extends Thread {
 
     
             // 4. Sleep depending on framerate, with small negative offset.
-            // Offset is needed to keep the queue from filling.
+            // The offset prevents stuttering.
             if (waitPeriod > 2) {
                 waitMillis(waitPeriod - 2);
             }

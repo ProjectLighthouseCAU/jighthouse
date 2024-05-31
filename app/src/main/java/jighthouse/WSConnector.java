@@ -21,12 +21,13 @@ public class WSConnector extends Thread {
     private String username;
     private String token;
     private String address;
-    private JhWebsockClient ws;
+    private int waitPeriod;
+    // Flags
     private boolean isRunning;
     private boolean isConnected;
-    private Queue<JhFrameObject> reqQueue;
-    private final Object monitor = new Object();
-    private int waitPeriod;
+    // Objects
+    private Queue<JhFrameObject> frameQueue;
+    private JhWebsockClient ws;
 
     /**
      * Create a new websocket client.
@@ -38,7 +39,7 @@ public class WSConnector extends Thread {
         this.username   = username;
         this.token      = token;
         this.address    = address;
-        this.reqQueue   = reqQueue;
+        this.frameQueue   = reqQueue;
         this.waitPeriod = framerate > 0 ? ((int) (1000 / framerate)) : 1;
     }
 
@@ -130,19 +131,18 @@ public class WSConnector extends Thread {
         while (this.isRunning && this.isConnected) {
 
             // 1. Try to get a frame from the queue
-            synchronized (monitor) {
-                while (reqQueue.isEmpty()) {
-                    waitMillis(1);
-                    timeSinceReq += 1;
+            while (frameQueue.isEmpty()) {
+                waitMillis(1);
+                timeSinceReq += 1;
 
-                    // 1b. Repeat last image after 1s to avoid timeout
-                    if (timeSinceReq > 1000 && image != null) {
-                        sendImage(image);
-                        timeSinceReq = 0;
-                    }
+                // 1b. Repeat last image after 1s to avoid timeout
+                if (timeSinceReq > 1000 && image != null) {
+                    sendImage(image);
+                    timeSinceReq = 0;
                 }
             }
-            JhFrameObject frame = reqQueue.poll();
+            
+            JhFrameObject frame = frameQueue.poll();
             image = frame.getImage();
             
             // 2. Send image, set isConnected to return val of sendPAYL

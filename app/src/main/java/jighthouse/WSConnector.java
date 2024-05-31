@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Queue; 
 //import java.util.concurrent.ConcurrentLinkedQueue; 
 //import org.msgpack.core.*;
+import java.util.concurrent.BlockingQueue;
 
 public class WSConnector extends Thread {
     // Attributes
@@ -23,7 +24,7 @@ public class WSConnector extends Thread {
     private JhWebsockClient ws;
     private boolean isRunning;
     private boolean isConnected;
-    private Queue<JhFrameObject> reqQueue;
+    private BlockingQueue<JhFrameObject> reqQueue;
     // TODO: Does JH need the response or do we just print it here if ERR?
     //private Queue<JhFrameObject> respQueue; 
 
@@ -33,7 +34,7 @@ public class WSConnector extends Thread {
      * @param listener
      */
     public WSConnector(String username, String token, String address, 
-        Queue<JhFrameObject> reqQueue) {
+        BlockingQueue<JhFrameObject> reqQueue) {
         this.username   = username;
         this.token      = token;
         this.address    = address;
@@ -98,12 +99,25 @@ public class WSConnector extends Thread {
         this.isRunning = true;
         this.isConnected = connect();
 
+        int [][][] image;
         while (this.isRunning && this.isConnected) {
-            // TODO: implement the following:
-            // 1. Parse/extract iamge from obj on queue
-            // 2. Send image, set isConnected to return val of sendPAYL
-            // 3. Check for response
-            // 4. Sleep depending on framerate
+            // 1. Parse/extract img from obj on queue
+            try {
+                JhFrameObject frame = reqQueue.take();
+                image = frame.getImage();
+
+                // TODO 2. Send image, set isConnected to return val of sendPAYL
+    
+                // TODO 3. Check for response
+
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    this.isRunning = false;
+                }
+    
+            // TODO 4. Sleep depending on framerate, with small negative offset
+            
         }
 
         // Disconnect from server

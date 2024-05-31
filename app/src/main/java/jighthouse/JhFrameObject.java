@@ -19,4 +19,8 @@ public class JhFrameObject {
         this.id = img_id;
         this.image = img_data;
     }
+
+    public int[][][] getImage() {
+        return image;
+    }
 }

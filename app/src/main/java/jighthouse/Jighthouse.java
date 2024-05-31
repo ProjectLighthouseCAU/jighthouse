@@ -1,8 +1,8 @@
 package jighthouse;
 
-import java.util.Queue; 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue; 
+//import java.util.Queue; 
+//import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue; 
 
 /**
  * 'Main' class to be used by external applications.
@@ -22,7 +22,7 @@ public class Jighthouse {
     private boolean isRunning;
 
     // Queue
-    private BlockingQueue<JhFrameObject> frameQueue;
+    private ConcurrentLinkedQueue<JhFrameObject> frameQueue;
     private WSConnector wsThread;
 
     /**
@@ -60,8 +60,8 @@ public class Jighthouse {
     public void start() {
         this.isRunning = true;
         // Create Queue and Thread
-        this.frameQueue = new LinkedBlockingQueue<JhFrameObject>();
-        this.wsThread = new WSConnector(username, token, address, frameQueue);
+        this.frameQueue = new ConcurrentLinkedQueue<JhFrameObject>();
+        this.wsThread = new WSConnector(username, token, address, frameQueue, framerate);
         // Start thread
         this.wsThread.start();
     }

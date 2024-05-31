@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Queue; 
 //import java.util.concurrent.ConcurrentLinkedQueue; 
 //import org.msgpack.core.*;
-import java.util.concurrent.BlockingQueue;
+//import java.util.concurrent.BlockingQueue;
 
 public class WSConnector extends Thread {
     // Attributes
@@ -24,9 +24,9 @@ public class WSConnector extends Thread {
     private JhWebsockClient ws;
     private boolean isRunning;
     private boolean isConnected;
-    private BlockingQueue<JhFrameObject> reqQueue;
-    // TODO: Does JH need the response or do we just print it here if ERR?
-    //private Queue<JhFrameObject> respQueue; 
+    private Queue<JhFrameObject> reqQueue;
+    private final Object monitor = new Object();
+    private int waitPeriod;
 
     /**
      * Create a new websocket client.
@@ -34,11 +34,12 @@ public class WSConnector extends Thread {
      * @param listener
      */
     public WSConnector(String username, String token, String address, 
-        BlockingQueue<JhFrameObject> reqQueue) {
+        Queue<JhFrameObject> reqQueue, double framerate) {
         this.username   = username;
         this.token      = token;
         this.address    = address;
         this.reqQueue   = reqQueue;
+        this.waitPeriod = framerate > 0 ? ((int) (1000 / framerate)) : 1;
     }
 
     /**
@@ -78,6 +79,11 @@ public class WSConnector extends Thread {
         }
     }
 
+    private boolean sendImage(int[][][] image) {
+        // TODO: Implement
+        return true;
+    }
+
     /**
      * Disconnects from the Lighthouse server.
      */
@@ -99,25 +105,51 @@ public class WSConnector extends Thread {
         this.isRunning = true;
         this.isConnected = connect();
 
-        int [][][] image;
+        // Image variable
+        int [][][] image = null;
+
+        // Timer variable
+        int timeSinceReq = 0;
+
+        // Main loop
         while (this.isRunning && this.isConnected) {
-            // 1. Parse/extract img from obj on queue
-            try {
-                JhFrameObject frame = reqQueue.take();
-                image = frame.getImage();
 
-                // TODO 2. Send image, set isConnected to return val of sendPAYL
-    
-                // TODO 3. Check for response
+            // 1. Try to get a frame from the queue
+            synchronized (monitor) {
+                while (reqQueue.isEmpty()) {
+                    try {
+                        Thread.sleep(1);
+                        timeSinceReq += 1;
 
+                        // 1b. Repeat last image after 1s to avoid timeout
+                        if (timeSinceReq >= 1000 && image != null) {
+                            sendImage(image);
+                            timeSinceReq = 0;
+                        }
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    this.isRunning = false;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        Thread.currentThread().interrupt();
+                        this.isRunning = false;
+                    }
                 }
+            }
+            JhFrameObject frame = reqQueue.poll();
+            image = frame.getImage();
+            
+            
+            // 2. Send image, set isConnected to return val of sendPAYL
+            if (image != null) {
+                sendImage(image);
+                timeSinceReq = 0;
+            }
+    
+            // TODO 3. Check for response
+
+
     
             // TODO 4. Sleep depending on framerate, with small negative offset
-            
+
         }
 
         // Disconnect from server

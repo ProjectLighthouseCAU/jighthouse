@@ -11,7 +11,7 @@ import org.msgpack.core.*;
 /**
  * Class that models an outgoing message to be sent to the lighthouse.
  */
-public class JhPacker {
+public class JhRequest {
 
     int REID;
     String USER;
@@ -20,7 +20,7 @@ public class JhPacker {
     String[] PATH;
     Map<String, Object> DATA;
 
-    public JhPacker(int reid, String user, String token, HashMap<String, Object> data) {
+    public JhRequest(int reid, String user, String token, HashMap<String, Object> data) {
         this.REID = reid;
         this.USER = user;
         this.TOKEN = token;

@@ -1,14 +1,19 @@
 package jighthouse;
 
+import java.util.Queue; 
+import java.util.concurrent.ConcurrentLinkedQueue; 
+
 /**
  * 'Main' class to be used by external applications.
  */
 public class Jighthouse {
 
-    String username;
-    String token;
-    String address;
-    double framerate;
+    private String username;
+    private String token;
+    private String address;
+    private double framerate;
+    private boolean isRunning;
+    private Queue<JhFrameObject> frameQueue;
 
     /**
      * Constructor for Jighthouse class.
@@ -31,16 +36,25 @@ public class Jighthouse {
         this.framerate = 60;
     }
 
-    public class JHMessageHandler {
+    public void start() {
+        this.frameQueue = new ConcurrentLinkedQueue<>();
+        // TODO init and run thread
+    }
+
+    public void setFpsLimit(int framerate) {
+        this.framerate = framerate;
+        // TODO send this to the thread
+    }
+
+    public void sendFrame() {
         // TODO implement
     }
 
-    public class JHThread extends Thread {
-
-        public void run() {
-            // TODO implement
-        }
-
+    public boolean isRunning() {
+        return this.isRunning;
     }
 
+    public void stop() {
+        // TODO
+    }
 }

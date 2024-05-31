@@ -8,16 +8,22 @@ import org.java_websocket.exceptions.WebsocketNotConnectedException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Queue; 
+import java.util.concurrent.ConcurrentLinkedQueue; 
 //import org.msgpack.core.*;
 
-public class WSConnector {
+public class WSConnector extends Thread {
     // Attributes
     private String username;
     private String token;
     private String address;
     private JhWebsockClient ws;
+    private boolean isRunning;
+    private Queue<JhFrameObject> reqQueue;
+    //private Queue<JhFrameObject> respQueue; //todo
 
     /**
      * Create a new websocket client.
@@ -51,7 +57,7 @@ public class WSConnector {
      */
     public void sendPAYL(Object data) {
         try {
-            JhPackage msg = new JhPackage(0, username, token, null);
+            JhRequest msg = new JhRequest(0, username, token, null);
             byte[] packagedData = msg.toByteArray();
             if (packagedData != null) {
                 ws.send(ByteBuffer.wrap(packagedData));
@@ -71,6 +77,20 @@ public class WSConnector {
         } else {
             System.err.println("WebSocket is not open.");
         }
+    }
+
+    @Override
+    public void run() {
+        this.isRunning = true;
+
+        while (this.isRunning) {
+            // TODO implement
+            
+        }
+    }
+
+    public void stopThread() {
+        this.isRunning = false;
     }
 
 }

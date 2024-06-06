@@ -36,8 +36,14 @@ public class Jighthouse {
         this.username     = username;
         this.token        = token;
         this.address      = address;
-        this.framerate    = framerate > 180 ? 180 : framerate;
         this.framecounter = 0;
+        if (framerate > 180) {
+            this.framerate = 180;
+        } else if (framerate < 1) {
+            this.framerate = 1;
+        } else {
+            this.framerate = framerate;
+        }
     }
 
     /**
@@ -58,28 +64,21 @@ public class Jighthouse {
      * Initializes the Jighthouse.
      */
     public void start() {
-        this.isRunning = true;
-        // Create Queue and Thread
-        this.frameQueue = new ConcurrentLinkedQueue<JhFrameObject>();
-        this.wsThread = new WSConnector(username, token, address, frameQueue, framerate);
-        // Start thread
-        this.wsThread.start();
-    }
-
-    /**
-     * Changes the framerate limit.
-     * @param framerate new fps limit
-     */
-    public void setFpsLimit(int framerate) {
-        this.framerate = framerate;
-        // TODO: send this to the thread, else its useless
+        if (!this.isRunning) {
+            this.isRunning = true;
+            // Create Queue and Thread
+            this.frameQueue = new ConcurrentLinkedQueue<JhFrameObject>();
+            this.wsThread = new WSConnector(username, token, address, frameQueue, framerate);
+            // Start thread
+            this.wsThread.start();
+        }
     }
 
     /**
      * Sends a new frame to the Lighthouse Server.
-     * @param image encoded as X*Y*color
+     * @param image encoded as Y*X*color
      */
-    public void sendFrame(int [][][] image) {
+    public void sendFrame(byte [][][] image) {
         // Create and enqueue frame
         JhFrameObject frame = new JhFrameObject(framecounter, image);
         this.frameQueue.add(frame);
@@ -99,7 +98,9 @@ public class Jighthouse {
      * Tells the Jighthouse to disconnect from the server.
      */
     public void stop() {
-        this.wsThread.stopThread();
-        this.isRunning = false;
+        if (this.isRunning) {
+            this.wsThread.stopThread();
+            this.isRunning = false;
+        }
     }
 }

@@ -80,9 +80,8 @@ public class WSConnector extends Thread {
         }
     }
 
-    private boolean sendImage(int[][][] image) {
-        // TODO: Implement
-        return true;
+    private boolean sendImage(byte[] image) {
+        return sendPAYL(image);
     }
 
     /**
@@ -122,7 +121,7 @@ public class WSConnector extends Thread {
         this.isConnected = connect();
 
         // Image variable
-        int [][][] image = null;
+        byte[] image = null;
 
         // Timer variable
         int timeSinceReq = 0;

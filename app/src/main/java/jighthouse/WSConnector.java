@@ -151,18 +151,14 @@ public class WSConnector extends Thread {
                 timeSinceReq = 0;
             }
     
-            // TODO 3. Check for response
-
-
-    
-            // 4. Sleep depending on framerate, with small negative offset.
+            // 3. Sleep depending on framerate, with small negative offset.
             // The offset prevents stuttering.
             if (waitPeriod > 2) {
                 waitMillis(waitPeriod - 2);
             }
         }
 
-        // Disconnect from server
+        // 4. Disconnect from server
         if (this.isConnected) {
             disconnect();
         }

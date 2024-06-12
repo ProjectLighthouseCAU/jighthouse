@@ -122,7 +122,7 @@ public class Jighthouse {
      */
     public void sendFrame(byte[] buffer) {
         if (buffer.length != 1176) {
-            throw new IllegalArgumentException("Invalid image size: Expected 1176 bytes, but got "+ buffer.length)
+            throw new IllegalArgumentException("Invalid image size: Expected 1176 bytes, but got "+ buffer.length);
         }
         // Create and enqueue frame
         JhFrameObject frame = new JhFrameObject(framecounter, buffer);

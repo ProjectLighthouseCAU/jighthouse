@@ -5,7 +5,7 @@ package jighthouse;
 
 public class App {
 
-    // TODO: Implement this class
+    // TODO: REMOVE this class
 
     public String getGreeting() {
         return "Hello World!";

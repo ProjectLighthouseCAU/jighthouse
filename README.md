@@ -29,7 +29,7 @@ Before you can send Images to the Lighthouse server, the Jighthouse must be runn
 To run the JH, simply use  `myJighthouse.start();` **at the beginning** of your program.  
 This will connect your Jighthouse to our Lighthouse servers. If something goes wrong, an error will be thrown.
 
-### Sending Frames to the Lighthouse servers
+### Frame/Image format
 There are three data formats which you can use for sending frames to the Lighthouse: 
 
 #### 1. byte[c][x][y]: A 3D array using Bytes 
@@ -66,7 +66,7 @@ The indices and expected frame size are the same as for the previous method.
 Instead of using the other two methods, you can also encode the byte array yourself.  
 TODO: Add more detailed info about encoding  
 
-#### Method for sending frames
+### Sending frames to the Lighthouse server
 For sending the frame in one of the specified formats, you can use the following method:
 ```java
 myJighthouse.sendFrame(exampleFrame);

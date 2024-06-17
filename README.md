@@ -82,3 +82,42 @@ For sending the frame in one of the specified formats, you can use the following
 myJighthouse.sendFrame(exampleFrame);
 ```
 For this to work your Jighthouse *must* be running.
+
+#### Q&A
+
+*Q: How often can I send a frame to the Lighthouse?*
+
+A: The standard framerate limit is set to **60 FPS**. This means that you can invoke the **sendFrame()** method every ~17 milliseconds.  
+  If you invoke it more often than that, in which case frames will be skipped.
+
+*Q: But my animation would look really great at higher framerates. Is there a way to raise the framerate?*
+
+A: If needed, the framerate limit can be changed to values **between 1 and 180**, using the method:
+```java
+myJighthouse.setFpsLimit(120); // Example for setting a framerate limit of 120 fps
+```
+If you want to set a custom fps limit, this should be done before starting/connection your JH, else this method will cause it to re-initialize the JH connection.
+
+### Example Code Snippet
+
+```java
+private void run() {
+    // Setting name and token
+    username = "myUserName";
+    token    = "API-TOK_XXXX-XXXX-XXXX-XXXX-XXXX";
+
+    // Instantiate and run the Jighthouse
+    private myJighthouse = new Jighthouse(username, token);
+    myJighthouse.start();
+
+    // Loop that sends frames
+    while(myJighthouse.isRunning()) {
+        // Make a new frame
+        byte[][][] frame = yourMethodForGeneratingAFrame();
+        // Use the JH to send generated frame to the lighthouse server
+        myJighthouse.sendFrame(frame);
+        // Wait for 17 ms
+        thread.sleep(17);
+    }
+}
+```

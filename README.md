@@ -21,7 +21,7 @@ String token    = "API-TOK_XXXX-XXXX-XXXX-XXXX-XXXX";
   
 Now you can instantiate the Jighthouse inside your project:
 ```java
-private myJighthouse = new Jighthouse(username, token);
+private Jighthouse myJighthouse = new Jighthouse(username, token);
 ```
 
 ### Running the Jighthouse
@@ -69,8 +69,10 @@ First we have a series of colors, then a series of window rows, then a series of
 A frame for a 4x2 Lighthouse that shows a red horizontal stripe over a blue horizontal stripe would look like this:
 ```java
 byte[] exampleFrame = {
-    255,0,0,  0,0,255,  255,0,0,  0,0,255,
-    255,0,0,  0,0,255,  255,0,0,  0,0,255
+    255,0,0,  0,0,255,  
+    255,0,0,  0,0,255,
+    255,0,0,  0,0,255,  
+    255,0,0,  0,0,255
 }
 ```
 
@@ -107,7 +109,7 @@ private void run() {
     private String token    = "API-TOK_XXXX-XXXX-XXXX-XXXX-XXXX";
 
     // Instantiate and run the Jighthouse
-    private myJighthouse = new Jighthouse(username, token);
+    private Jighthouse myJighthouse = new Jighthouse(username, token);
     myJighthouse.start();
 
     // Loop that sends frames

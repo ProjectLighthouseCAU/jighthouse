@@ -21,7 +21,7 @@ String token    = "API-TOK_XXXX-XXXX-XXXX-XXXX-XXXX";
   
 Now you can instantiate the Jighthouse inside your project:
 ```java
-private Jighthouse myJighthouse = new Jighthouse(username, token);
+Jighthouse myJighthouse = new Jighthouse(username, token);
 ```
 
 ### Running the Jighthouse
@@ -105,11 +105,11 @@ If you want to set a custom fps limit, this should be done before starting/conne
 ```java
 private void run() {
     // Setting name and token
-    private String username = "myUserName";
-    private String token    = "API-TOK_XXXX-XXXX-XXXX-XXXX-XXXX";
+    String username = "myUserName";
+    String token    = "API-TOK_XXXX-XXXX-XXXX-XXXX-XXXX";
 
     // Instantiate and run the Jighthouse
-    private Jighthouse myJighthouse = new Jighthouse(username, token);
+    Jighthouse myJighthouse = new Jighthouse(username, token);
     myJighthouse.start();
 
     // Loop that sends frames

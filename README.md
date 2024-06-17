@@ -25,9 +25,11 @@ Jighthouse myJighthouse = new Jighthouse(username, token);
 ```
 
 ### Running the Jighthouse
-Before you can send Images to the Lighthouse server, the Jighthouse must be running.   
-To run the JH, simply use  `myJighthouse.start();` **at the beginning** of your program.  
-This will connect your Jighthouse to our Lighthouse servers. If something goes wrong, an error will be thrown.
+Before you can send Images to the Lighthouse server, the Jighthouse must be started:
+```java
+myJighthouse.start();
+```
+This will tell your Jighthouse to connect to the Lighthouse servers. 
 
 ### Frame/Image format
 There are three data formats which you can use for sending frames to the Lighthouse: 

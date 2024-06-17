@@ -38,33 +38,43 @@ The java data type **byte** contains numbers from 0 to 255. This is convenient b
 - Second index (x) contains the window column starting from the left: From 0=Leftmost to 13=Rightmost window
 - Third index (y) contains the window row starting from the top: From 0=14th Floor to 13=1st Floor.
 
-A 4x2 Lighthouse that shows a red horizontal stripe over a blue horizontal stripe would look like this:
+A frame for a 4x2 Lighthouse that shows a red horizontal stripe over a blue horizontal stripe would look like this:
 ```java
 byte[][][] exampleFrame = {
-    {{255,0,0,},{255,0,0,},{255,0,0,},{255,0,0,}}
-    {{0,0,255},{0,0,255},{0,0,255},{0,0,255}},
+    {{255,0,0},{255,0,0},{255,0,0},{255,0,0}},
+    {{0,0,255},{0,0,255},{0,0,255},{0,0,255}}
 }
 ```
 
 The frame you send to the Lighthouse *must* be exactly 3\*28\*14.
 
 #### 2. int[c][x][y]: A 3D array using Integers (not recommended)
-Instead if using a 3D array with bytes, you can also use ints instead. This is not recommended because it will internally converted into an byte array anyway which unnecessarily eats processing power.  
+Instead if using a 3D array with bytes, you can also use the int data type. This is not recommended because internally it will converted into an byte array anyway. The conversion involves clipping to get rid of values outside the specified range and eats processing power.  
 It is much more efficient if you configure your program using the *byte* data type for colors from the beginning.
 
-A 4x2 Lighthouse that shows a red horizontal stripe over a blue horizontal stripe would look like this:
+A frame for a 4x2 Lighthouse that shows a red horizontal stripe over a blue horizontal stripe would look like this:
 ```java
 int[][][] exampleFrame = {
-    {{255,0,0,},{255,0,0,},{255,0,0,},{255,0,0,}}
-    {{0,0,255},{0,0,255},{0,0,255},{0,0,255}},
+    {{255,0,0},{255,0,0},{255,0,0},{255,0,0}},
+    {{0,0,255},{0,0,255},{0,0,255},{0,0,255}}
 }
 ```
 
 The indices and expected frame size are the same as for the previous method.
 
 #### 3. byte[]: A simple pre-encoded byte array  
-Instead of using the other two methods, you can also encode the byte array yourself.  
-TODO: Add more detailed info about encoding  
+Instead of using the other two methods, you can also encode the byte array yourself.
+First we have a series of colors, then a series of window rows, then a series of window colums.
+
+A frame for a 4x2 Lighthouse that shows a red horizontal stripe over a blue horizontal stripe would look like this:
+```java
+byte[] exampleFrame = {
+    255,0,0,  0,0,255,  255,0,0,  0,0,255,
+    255,0,0,  0,0,255,  255,0,0,  0,0,255
+}
+```
+
+The byte array sent to the actual lighthouse must have a length of $3\cdot 14\cdot 28 = 1176$.
 
 ### Sending frames to the Lighthouse server
 For sending the frame in one of the specified formats, you can use the following method:

@@ -103,8 +103,8 @@ If you want to set a custom fps limit, this should be done before starting/conne
 ```java
 private void run() {
     // Setting name and token
-    username = "myUserName";
-    token    = "API-TOK_XXXX-XXXX-XXXX-XXXX-XXXX";
+    private String username = "myUserName";
+    private String token    = "API-TOK_XXXX-XXXX-XXXX-XXXX-XXXX";
 
     // Instantiate and run the Jighthouse
     private myJighthouse = new Jighthouse(username, token);

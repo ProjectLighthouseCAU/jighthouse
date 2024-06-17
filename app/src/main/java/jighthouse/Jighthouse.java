@@ -18,11 +18,12 @@ public class Jighthouse {
     private double  framerate;
 
     // Flags
-    private int     framecounter;
-    private boolean isRunning;
+    private int       framecounter;
+    private WSCStatus threadState = WSCStatus.READY;
 
-    // Queue
+    // Queues and thread
     private ConcurrentLinkedQueue<JhFrameObject> frameQueue;
+    private ConcurrentLinkedQueue<WSCStatus> statusQueue;
     private WSConnector wsThread;
 
     /**
@@ -44,6 +45,7 @@ public class Jighthouse {
         } else {
             this.framerate = framerate;
         }
+        this.statusQueue = new ConcurrentLinkedQueue<WSCStatus>();
     }
 
     /**
@@ -58,19 +60,52 @@ public class Jighthouse {
         this.address      = "wss://lighthouse.uni-kiel.de/websocket";
         this.framerate    = 60;
         this.framecounter = 0;
+        this.statusQueue = new ConcurrentLinkedQueue<WSCStatus>();
+    }
+
+    /**
+     * Get current status of the queue.
+     */
+    private void refreshStatus() {
+        while (!statusQueue.isEmpty()) {
+            this.threadState = statusQueue.poll();
+        }
+    }
+
+    /**
+     * Restarts the Jighthouse if it is running already.
+     */
+    private void restartIfRunning() {
+        if (this.threadState == WSCStatus.RUNNING) {
+            this.stop();
+            this.start();
+        }
+    }
+
+    /**
+     * Sets a different framerate limit.
+     * @param fpsLimit
+     */
+    public void setFramerateLimit(int fpsLimit) {
+        this.framerate = fpsLimit;
+        restartIfRunning();
     }
 
     /**
      * Initializes the Jighthouse.
      */
     public void start() {
-        if (!this.isRunning) {
-            this.isRunning = true;
+        refreshStatus();
+        if (this.threadState == WSCStatus.READY) {
+            this.threadState = WSCStatus.RUNNING;
             // Create Queue and Thread
             this.frameQueue = new ConcurrentLinkedQueue<JhFrameObject>();
-            this.wsThread = new WSConnector(username, token, address, frameQueue, framerate);
+            this.statusQueue = new ConcurrentLinkedQueue<WSCStatus>();
+            this.wsThread = new WSConnector(username, token, address, frameQueue, statusQueue, framerate);
             // Start thread
             this.wsThread.start();
+        } else {
+            System.err.println("ERROR: Jighthouse is already running!");
         }
     }
 
@@ -79,6 +114,10 @@ public class Jighthouse {
      * @param image as Y*X*color in a 3D array
      */
     public void sendFrame(byte[][][] image) {
+        refreshStatus();
+        if (this.threadState != WSCStatus.RUNNING) {
+            throw new IllegalStateException("ERROR: Cannot send frame when JH is not connected!");
+        }
         if (image.length != 14) {
             throw new IllegalArgumentException("Invalid Y dimension in Y*X*Color frame: expected 14, but got " + image.length);
         }
@@ -100,6 +139,10 @@ public class Jighthouse {
      * @param image as Y*X*color in a 3D array
      */
     public void sendFrame(int[][][] image) {
+        refreshStatus();
+        if (this.threadState != WSCStatus.RUNNING) {
+            throw new IllegalStateException("ERROR: Cannot send frame when JH is not connected!");
+        }
         if (image.length != 14) {
             throw new IllegalArgumentException("Invalid Y dimension in Y*X*Color frame: expected 14, but got " + image.length);
         }
@@ -121,6 +164,10 @@ public class Jighthouse {
      * @param image encoded as Y*X*color
      */
     public void sendFrame(byte[] buffer) {
+        refreshStatus();
+        if (this.threadState != WSCStatus.RUNNING) {
+            throw new IllegalStateException("ERROR: Cannot send frame when JH is not connected!");
+        }
         if (buffer.length != 1176) {
             throw new IllegalArgumentException("Invalid image size: Expected 1176 bytes, but got "+ buffer.length);
         }
@@ -133,19 +180,61 @@ public class Jighthouse {
 
     /**
      * Check if the Jighthouse is active and running.
-     * @return running state
+     * @return running true if Jighthouse is running
      */
     public boolean isRunning() {
-        return this.isRunning;
+        refreshStatus();
+        return this.threadState == WSCStatus.RUNNING;
     }
 
     /**
      * Tells the Jighthouse to disconnect from the server.
      */
     public void stop() {
-        if (this.isRunning) {
+        refreshStatus();
+        if (this.threadState == WSCStatus.RUNNING) {
             this.wsThread.stopThread();
-            this.isRunning = false;
+        }
+        
+        // Wait for termination, max. 1000 ms
+        for (int i = 0; i < 10; i+=1) {
+            refreshStatus();
+            if (!(this.threadState == WSCStatus.RUNNING)){ break;}
+            System.out.println("Waiting for WS Thread to terminate...");
+            sleep(100);
+        }
+
+        // Set thread to ready
+        this.threadState = WSCStatus.READY;
+    }
+
+    /**
+     * Sleep surrounded by try-catch
+     * @param millis Duration to sleep for in ms
+     */
+    private void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            // do nothing
+        }
+    }
+
+    /**
+     * Checks if given parameters are valid and throws an error if something is invalid.
+     */
+    private void checkParamValidity() {
+        if (this.username == null) {
+            throw new IllegalArgumentException("ERROR: Username must not be null!");
+        }
+        if (this.token == null) {
+            throw new IllegalArgumentException("ERROR: Access token must not be null!");
+        }
+        if (this.address == null) {
+            throw new IllegalArgumentException("ERROR: Lighthouse Server URL must not be null!");
+        }
+        if (this.framerate < 1 || this.framerate > 180) {
+            throw new IllegalArgumentException("ERROR: Framerate must be between 1 and 180!");
         }
     }
 }

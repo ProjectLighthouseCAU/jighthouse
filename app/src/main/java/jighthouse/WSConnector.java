@@ -27,6 +27,7 @@ public class WSConnector extends Thread {
     private boolean isConnected;
     // Objects
     private Queue<JhFrameObject> frameQueue;
+    private Queue<WSCStatus> statusQueue;
     private JhWebsockClient ws;
 
     /**
@@ -35,12 +36,13 @@ public class WSConnector extends Thread {
      * @param listener
      */
     public WSConnector(String username, String token, String address, 
-        Queue<JhFrameObject> reqQueue, double framerate) {
-        this.username   = username;
-        this.token      = token;
-        this.address    = address;
+        Queue<JhFrameObject> reqQueue, Queue<WSCStatus> statusQueue, double framerate) {
+        this.username     = username;
+        this.token        = token;
+        this.address      = address;
         this.frameQueue   = reqQueue;
-        this.waitPeriod = framerate > 0 ? ((int) (1000 / framerate)) : 1;
+        this.statusQueue  = statusQueue;
+        this.waitPeriod   = framerate > 0 ? ((int) (1000 / framerate)) : 1;
     }
 
     /**
@@ -80,6 +82,11 @@ public class WSConnector extends Thread {
         }
     }
 
+    /**
+     * Sends an image encoded as byte[] as the payload.
+     * @param image
+     * @return
+     */
     private boolean sendImage(byte[] image) {
         return sendPAYL(image);
     }
@@ -114,6 +121,13 @@ public class WSConnector extends Thread {
         }
     }
 
+    /**
+     * Enqueues a status to let the Jighthouse know what happens.
+     */
+    private void setStatus(WSCStatus status) {
+        this.statusQueue.add(status);
+    }
+
     @Override
     public void run() {
         // Try to connect to server
@@ -128,6 +142,7 @@ public class WSConnector extends Thread {
 
         // Main loop
         while (this.isRunning && this.isConnected) {
+            setStatus(WSCStatus.RUNNING);
 
             // 1. Try to get a frame from the queue
             while (frameQueue.isEmpty()) {
@@ -163,6 +178,7 @@ public class WSConnector extends Thread {
             disconnect();
         }
         this.isRunning = false;
+        setStatus(WSCStatus.TERMINATED);
     }
 
     /**

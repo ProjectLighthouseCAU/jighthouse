@@ -25,9 +25,6 @@ dependencies {
     implementation 'org.msgpack:msgpack-core:0.9.0'
     implementation 'org.java-websocket:Java-WebSocket:1.5.2'
     implementation 'org.slf4j:slf4j-nop:1.7.32'
-
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation libs.guava
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -35,9 +32,20 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+    //withSourcesJar()
+    //withJavadocJar()
 }
 
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
+
+tasks.named('jar') {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                   'Implementation-Version': project.version)
+    }
+}
+
+version = '0.1.0'

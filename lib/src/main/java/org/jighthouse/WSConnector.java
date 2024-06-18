@@ -13,7 +13,7 @@ import jighthouse.utils.JhFrameObject;
 import jighthouse.utils.JhRequest;
 import jighthouse.utils.WSCStatus;
 
-public class WSConnector extends Thread {
+class WSConnector extends Thread {
     // Attributes
     private String username;
     private String token;

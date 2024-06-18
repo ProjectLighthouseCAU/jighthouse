@@ -15,7 +15,7 @@ import org.msgpack.core.MessageUnpacker;
 import org.msgpack.value.Value;
 import org.msgpack.value.impl.ImmutableStringValueImpl;
 
-public class JhWebsockClient extends WebSocketClient {
+class JhWebsockClient extends WebSocketClient {
 
 	private int httpCode = 0;
 	private String lastResponse = "";

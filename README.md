@@ -112,13 +112,14 @@ When your program is done sending stuff to the Lighthouse, you should terminate 
 myJighthouse.stop();
 ```
 ### Example Code Snippet
-The following example will show randomly colored Pixels on the Lighthouse for 5 seconds:
+The following example will show a series of randomly colored Pixels on the Lighthouse for 5 seconds:
 
 ```java
     private byte[] randomColors(){
+        // Initialize byte array
         byte[] frame = new byte[1176];
+        // Fill array with random bytes
         ThreadLocalRandom.current().nextBytes(frame);
-        frame[1] = (byte) 127;
         return frame;
     }
 
@@ -130,7 +131,6 @@ The following example will show randomly colored Pixels on the Lighthouse for 5 
         // Instantiate and run the Jighthouse
         Jighthouse myJighthouse = new Jighthouse(username, token);
         myJighthouse.start();
-        Thread.sleep(500);
     
         // Loop that sends frames
         for (int i = 0; i < 10; i++) {
@@ -154,8 +154,8 @@ A: The standard framerate limit is set to **60 FPS**. This means that you can in
 
 *Q: But my animation would look really great at higher framerates. Is there a way to raise the framerate?*
 
-A: If needed, the framerate limit can be changed to values **between 1 and 180**, using the method:
+A: If needed, the framerate limit can be changed to values **between 1 and 180**, using the method *setFpsLimit()*. Ideally this should be done right after instantiation, before calling *start()* on the Jighthouse, else it will re-initialize the connection.
+
 ```java
 myJighthouse.setFpsLimit(120); // Example for setting a framerate limit of 120 fps
 ```
-If you want to set a custom fps limit, this should be done before starting/connection your JH, else this method will cause it to re-initialize the JH connection.

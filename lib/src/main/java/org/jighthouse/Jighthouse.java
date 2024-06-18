@@ -113,21 +113,23 @@ public class Jighthouse {
 
     /**
      * Sends a new frame to the Lighthouse Server.
-     * @param image as Y*X*color in a 3D array
+     * @param image as Color,X,Y in a 3D array
      */
     public void sendFrame(byte[][][] image) {
         refreshStatus();
+        // Check if Jh is running and image has the right size
         if (this.threadState != WSCStatus.RUNNING) {
+            stop();
             throw new IllegalStateException("ERROR: Cannot send frame when JH is not connected!");
-        }
-        if (image.length != 14) {
-            throw new IllegalArgumentException("Invalid Y dimension in Y*X*Color frame: expected 14, but got " + image.length);
-        }
-        if (image[0].length != 28) {
-            throw new IllegalArgumentException("Invalid X dimension in Y*X*Color frame: expected 28, but got " + image[0].length);
-        }
-        if (image[0][0].length != 3) {
-            throw new IllegalArgumentException("Invalid color depth in Y*X*Color frame: expected 3, but got " + image[0][0].length);
+        } else if (image[0][0].length != 14) {
+            stop();
+            throw new IllegalArgumentException("Invalid Y dimension in frame[color][x][y]: expected 14, but got " + image.length);
+        } else if (image[0].length != 28) {
+            stop();
+            throw new IllegalArgumentException("Invalid X dimension in frame[color][x][y]: expected 28, but got " + image[0].length);
+        } else if (image.length != 3) {
+            stop();
+            throw new IllegalArgumentException("Invalid color depth in frame[color][x][y]: expected 3, but got " + image[0][0].length);
         }
         // Create and enqueue frame
         JhFrameObject frame = new JhFrameObject(framecounter, image);
@@ -138,21 +140,23 @@ public class Jighthouse {
 
     /**
      * Sends a new frame to the Lighthouse Server.
-     * @param image as Y*X*color in a 3D array
+     * @param image as Color,X,Y in a 3D array
      */
     public void sendFrame(int[][][] image) {
         refreshStatus();
+        // Check if Jh is running and image has the right size
         if (this.threadState != WSCStatus.RUNNING) {
+            stop();
             throw new IllegalStateException("ERROR: Cannot send frame when JH is not connected!");
-        }
-        if (image.length != 14) {
-            throw new IllegalArgumentException("Invalid Y dimension in Y*X*Color frame: expected 14, but got " + image.length);
-        }
-        if (image[0].length != 28) {
-            throw new IllegalArgumentException("Invalid X dimension in Y*X*Color frame: expected 28, but got " + image[0].length);
-        }
-        if (image[0][0].length != 3) {
-            throw new IllegalArgumentException("Invalid color depth in Y*X*Color frame: expected 3, but got " + image[0][0].length);
+        } else if (image[0][0].length != 14) {
+            stop();
+            throw new IllegalArgumentException("Invalid Y dimension in frame[color][x][y]: expected 14, but got " + image.length);
+        } else if (image[0].length != 28) {
+            stop();
+            throw new IllegalArgumentException("Invalid X dimension in frame[color][x][y]: expected 28, but got " + image[0].length);
+        } else if (image.length != 3) {
+            stop();
+            throw new IllegalArgumentException("Invalid color depth in frame[color][x][y]: expected 3, but got " + image[0][0].length);
         }
         // Create and enqueue frame
         JhFrameObject frame = new JhFrameObject(framecounter, image);

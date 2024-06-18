@@ -48,23 +48,20 @@ class JhFrameObject {
      */
     private byte[] from3DByteArray(byte[][][] byteArray3D) {
 
-        int yLength = byteArray3D.length;
+        int depth   = byteArray3D.length;
         int xLength = byteArray3D[0].length;
-        int colorDepth = byteArray3D[0][0].length;
+        int yLength = byteArray3D[0][0].length;
+        int arrSize = yLength * xLength * depth;
 
-        // resulting byte[] array has length (y * x * color)
-        byte[] byteArray = new byte[yLength * xLength * colorDepth];
-        int index = 0;
+        byte[] byteArray = new byte[arrSize];
 
-        // Iterate through given 3D array
-        for (int y = 0; y < yLength; y++) {
-            for (int x = 0; x < xLength; x++) {
-                for (int c = 0; c < 3; c++) {
-                    // Write value into array
-                    byteArray[index++] = byteArray3D[y][x][Math.min(colorDepth, c)];
-                }
-            }
+        for (int i = 0; i < arrSize; i++) {
+            int c =  i % depth;
+            int x = (i / depth) % xLength;
+            int y = (i / (depth * xLength)) % yLength;
+            byteArray[i] = byteArray3D[c][x][y];
         }
+        
         return byteArray;
     }
 
@@ -75,51 +72,69 @@ class JhFrameObject {
      */
     private byte[] from3DIntArray(int[][][] intArray3D) {
 
-        int yLength = intArray3D.length;
+        int depth   = intArray3D.length;
         int xLength = intArray3D[0].length;
-        int colorDepth = intArray3D[0][0].length;
+        int yLength = intArray3D[0][0].length;
+        int arrSize = yLength * xLength * depth;
 
-        // resulting byte[] array has length (y * x * color)
-        byte[] byteArray = new byte[yLength * xLength * colorDepth];
-        int index = 0;
+        byte[] byteArray = new byte[arrSize];
 
-        // Iterate through given 3D array
-        for (int y = 0; y < yLength; y++) {
-            for (int x = 0; x < xLength; x++) {
-                for (int c = 0; c < colorDepth; c++) {
-                    // Clip the value to be within 0 .. 255
-                    int value = intArray3D[y][x][c];
-                    if (value < 0) {
-                        value = 0;
-                    } else if (value > 255) {
-                        value = 255;
-                    }
-                    // Write value into array
-                    byteArray[index++] = (byte) value;
-                }
-            }
+        for (int i = 0; i < arrSize; i++) {
+            int c =  i % depth;
+            int x = (i / depth) % xLength;
+            int y = (i / (depth * xLength)) % yLength;
+            byteArray[i] = intToByte(intArray3D[c][x][y]);
         }
+        
         return byteArray;
     }
 
+    /**
+     * Converts integer to byte, clipping the value between 0..250
+     */
+    private byte intToByte(int n) {
+        if (n > 255) {
+            return (byte) 255;
+        } else if (n < 0) {
+            return (byte) 0;
+        } else {
+            return (byte) n;
+        }
+    }
+
+    /**
+     * Returns image as byte[]
+     */
     public byte[] getImage() {
         return buffer;
     }
 
+    /**
+     * Returns frame ID
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Returns termination flag
+     */
     public boolean isTerminationFrame() {
         return id == -1;
     }
 
+    /**
+     * Special constructor for frame with termination flag
+     */
     public static JhFrameObject getTerminationFrame() {
         byte[] arr = new byte[1176];
         JhFrameObject frame = new JhFrameObject(-1, arr);
         return frame;
     }
 
+    /**
+     * Special contructor for empty frame
+     */
     public static JhFrameObject getEmptyFrame() {
         byte[] arr = new byte[1176];
         JhFrameObject frame = new JhFrameObject(0, arr);

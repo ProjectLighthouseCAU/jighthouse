@@ -1,0 +1,11 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore IDE stuff
+.vscode
+.project
+.classpath
+
+# Ignore Gradle build output directory
+build
+lib/src/main/java/org/jighthouse/App.java

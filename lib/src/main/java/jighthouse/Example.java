@@ -42,6 +42,8 @@ public class Example {
         System.out.print("Enter the number of frames to send: ");
         int frameCount = scanner.nextInt();
 
+        scanner.close();
+
         Example test = new Example();
         test.run(username, token, frameCount);
     }

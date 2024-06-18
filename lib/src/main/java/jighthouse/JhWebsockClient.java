@@ -3,7 +3,6 @@ package jighthouse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
-import java.util.Date;
 import java.nio.ByteBuffer;
 
 import org.java_websocket.client.WebSocketClient;

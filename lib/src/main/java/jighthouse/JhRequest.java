@@ -11,8 +11,8 @@ class JhRequest {
     private int REID;
     private String USER;
     private String TOKEN;
-    private String VERB;
-    private String[] PATH;
+    //private String VERB;
+    //private String[] PATH;
     private byte[] PAYL;
     public final static int PAYL_SIZE = 1176;
 
@@ -20,7 +20,7 @@ class JhRequest {
         this.REID = reid;
         this.USER = user;
         this.TOKEN = token;
-        this.VERB = "PUT";
+        //this.VERB = "PUT";
         this.PAYL = payload;
     }
 

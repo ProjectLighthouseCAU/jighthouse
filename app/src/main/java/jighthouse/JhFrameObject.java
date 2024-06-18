@@ -110,4 +110,20 @@ public class JhFrameObject {
         return id;
     }
 
+    public boolean isTerminationFrame() {
+        return id == -1;
+    }
+
+    public static JhFrameObject getTerminationFrame() {
+        byte[] arr = new byte[1176];
+        JhFrameObject frame = new JhFrameObject(-1, arr);
+        return frame;
+    }
+
+    public static JhFrameObject getEmptyFrame() {
+        byte[] arr = new byte[1176];
+        JhFrameObject frame = new JhFrameObject(0, arr);
+        return frame;
+    }
+
 }

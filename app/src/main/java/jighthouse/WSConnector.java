@@ -68,7 +68,7 @@ public class WSConnector extends Thread {
             }
         }
         // Send test frame
-        if (sendTestImage()) {
+        if (sendBlackFrame()) {
             // Wait for response
             for (int i=0; i<10; i++) {
                 sleep(50);
@@ -98,6 +98,7 @@ public class WSConnector extends Thread {
                 ws.connect();
                 if (testConnection()) {
                     System.out.println("Authentification successful!");
+                    this.isConnected = true;
                     return true;
                 } else {
                     System.err.println("Error: Could not connect to websocket! Code: " + ws.getHttpCode() + ", Response: " + ws.getLastResponse());
@@ -113,6 +114,7 @@ public class WSConnector extends Thread {
             System.err.println("Error: Invalid websocket URL given!");
             ex.printStackTrace();
         }
+        this.isConnected = false;
         return false;
     }
 
@@ -144,7 +146,7 @@ public class WSConnector extends Thread {
      * @param image
      * @return
      */
-    private boolean sendTestImage() {
+    private boolean sendBlackFrame() {
         byte[] image = new byte[1176];
         try {
             JhRequest msg = new JhRequest(0, username, token, image);
@@ -164,6 +166,7 @@ public class WSConnector extends Thread {
      */
     private void disconnect() {
         if (ws != null && ws.isOpen()) {
+            sendBlackFrame();
             try {
                 ws.close();
             } catch (WebsocketNotConnectedException ex) {
@@ -172,6 +175,7 @@ public class WSConnector extends Thread {
         } else {
             System.err.println("WebSocket is not open.");
         }
+        this.isConnected = false;
     }
 
     /**
@@ -200,13 +204,15 @@ public class WSConnector extends Thread {
     public void run() {
         // Try to connect to server
         this.isRunning = true;
-        this.isConnected = connect();
+        connect();
 
         // Image variable
         byte[] image = null;
 
         // Timer variable
         int timeSinceReq = 0;
+
+        JhFrameObject frame = JhFrameObject.getEmptyFrame();
 
         // Main loop
         while (this.isRunning && this.isConnected) {
@@ -223,16 +229,21 @@ public class WSConnector extends Thread {
                     timeSinceReq = 0;
                 }
             }
-            JhFrameObject frame = frameQueue.poll();
             // Empty the whole queue, get newest frame
-            while (!frameQueue.isEmpty()) frame = frameQueue.poll();
-            image = frame.getImage();
+            while (!frameQueue.isEmpty()) {
+                frame = frameQueue.poll();
+                // Check for termination frame
+                if (frame.isTerminationFrame()) {
+                    this.isRunning = false;
+                    break;
+                }
+            }
             
             // 2. Send image, set isConnected to return val of sendPAYL
-            if (image != null) {
-                sendImage(image);
-                timeSinceReq = 0;
-            }
+            image = frame.getImage();
+            sendImage(image);
+            timeSinceReq = 0;
+
     
             // 3. Sleep depending on framerate, with small negative offset.
             // The offset prevents stuttering.
@@ -242,22 +253,8 @@ public class WSConnector extends Thread {
         }
 
         // 4. Disconnect from server
-        if (this.isConnected) {
-            disconnect();
-        }
-        terminate();
-    }
-
-    private void terminate() {
-        this.isRunning = false;
+        disconnect();
         setStatus(WSCStatus.TERMINATED);
-    }
-
-    /**
-     * Stops the thread before next iteration.
-     */
-    public synchronized void stopThread() {
-        this.isRunning = false;
     }
 
 }

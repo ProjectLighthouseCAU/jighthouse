@@ -196,7 +196,7 @@ public class Jighthouse {
     public void stop() {
         refreshStatus();
         if (this.threadState == WSCStatus.RUNNING) {
-            this.wsThread.stopThread();
+            this.frameQueue.add(JhFrameObject.getTerminationFrame());
         }
         
         // Wait for termination, max. 1000 ms
@@ -204,7 +204,7 @@ public class Jighthouse {
             refreshStatus();
             if (!(this.threadState == WSCStatus.RUNNING)){ break;}
             System.out.println("Waiting for WS Thread to terminate...");
-            sleep(100);
+            sleep(500);
         }
 
         // Set thread to ready

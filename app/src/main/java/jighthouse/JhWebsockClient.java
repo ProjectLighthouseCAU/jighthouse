@@ -45,7 +45,7 @@ public class JhWebsockClient extends WebSocketClient {
 
 	@Override
 	public void onClose(int code, String reason, boolean remote) {
-		System.out.println("WS connection closed with exit code " + code + "\nAdditional info: " + reason);
+		System.out.println("WS connection to " + super.getURI().toString() + " closed.");
 	}
 
 	@Override

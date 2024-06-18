@@ -128,7 +128,8 @@ class WSConnector extends Thread {
                     ws.send(ByteBuffer.wrap(packagedData));
                 }
                 if (!gotValidHttpCode()) {
-                    throw new IllegalStateException("Error while sending frame! Code: " + ws.getHttpCode() + ", Response: " + ws.getLastResponse());
+                    System.err.println("Error while sending frame! Code: " + ws.getHttpCode() + ", Response: " + ws.getLastResponse());
+                    disconnect();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -168,8 +169,6 @@ class WSConnector extends Thread {
             } catch (WebsocketNotConnectedException ex) {
                 System.err.println("Cannot disconnect: WebSocket is not connected!");
             }
-        } else {
-            System.err.println("Websocket is already closed.");
         }
         this.isConnected = false;
     }

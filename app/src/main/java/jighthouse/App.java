@@ -18,8 +18,8 @@ public class App {
 
     private void run() throws InterruptedException {
         // Setting name and token
-        String username = "chris1234";
-        String token    = "API-TOK_tj/m-45iF-sMqh-cbZh-ZCvX";
+        String username = "user";
+        String token    = "token";
     
         // Instantiate and run the Jighthouse
         Jighthouse myJighthouse = new Jighthouse(username, token);

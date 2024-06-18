@@ -40,33 +40,35 @@ class WSConnector extends Thread {
         this.isRunning    = false;
     }
 
+    private boolean gotValidHttpCode() {
+        int httpCode = ws.getHttpCode();
+        return httpCode < 400;
+    }
+
     /**
      * Method to test whether a connection was established.
      * @return true if connection successful
      * @throws InterruptedException
      */
     private boolean testConnection() throws InterruptedException {
-        int httpCode;
         // Wait 1 second for initial handshake
         for (int i=0; i<20; i++) {
             sleep(50);
-            httpCode = ws.getHttpCode();
-            // handshake will usually get us '101: protocol changed'
-            if (httpCode == 101 || (httpCode >= 200 && httpCode < 400)) {
+            // Check if HTTP Response is an error
+            if (ws.getHttpCode() != 0) {
                 break;
-            } else if (httpCode >= 400) {
-                return false;
-            }
+            } 
         }
-        // Send test frame
-        if (sendBlackFrame()) {
-            // Wait for response
-            for (int i=0; i<10; i++) {
-                sleep(50);
-                httpCode = ws.getHttpCode();
-                // Code 2xx means we're all good
-                if (httpCode >= 200 && httpCode < 400) {
-                    return true;
+        if (gotValidHttpCode()) {
+            // Send test frame
+            if (sendBlackFrame()) {
+                // Wait for response
+                for (int i=0; i<10; i++) {
+                    sleep(50);
+                    // Check if HTTP Response is an error
+                    if (gotValidHttpCode()) {
+                        return true;
+                    }
                 }
             }
         }
@@ -125,7 +127,9 @@ class WSConnector extends Thread {
                 if (packagedData != null) {
                     ws.send(ByteBuffer.wrap(packagedData));
                 }
-                return true;
+                if (!gotValidHttpCode()) {
+                    throw new IllegalStateException("Error while sending frame! Code: " + ws.getHttpCode() + ", Response: " + ws.getLastResponse());
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -165,7 +169,7 @@ class WSConnector extends Thread {
                 System.err.println("Cannot disconnect: WebSocket is not connected!");
             }
         } else {
-            System.err.println("WebSocket is not open.");
+            System.err.println("Websocket is already closed.");
         }
         this.isConnected = false;
     }

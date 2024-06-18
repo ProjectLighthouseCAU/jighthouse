@@ -97,13 +97,16 @@ public class Jighthouse {
         checkParamValidity();
 
         if (this.threadState == WSCStatus.READY) {
-            this.threadState = WSCStatus.RUNNING;
             // Create Queue and Thread
             this.frameQueue = new ConcurrentLinkedQueue<JhFrameObject>();
             this.statusQueue = new ConcurrentLinkedQueue<WSCStatus>();
             this.wsThread = new WSConnector(username, token, address, frameQueue, statusQueue, framerate);
             // Start thread
             this.wsThread.start();
+            while (this.threadState == WSCStatus.READY) {
+                sleep(50);
+                refreshStatus();
+            }
         } else if (this.threadState == WSCStatus.RUNNING) {
             System.err.println("ERROR: Jighthouse is already running!");
         } else {

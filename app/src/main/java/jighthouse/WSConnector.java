@@ -101,7 +101,7 @@ public class WSConnector extends Thread {
                     this.isConnected = true;
                     return true;
                 } else {
-                    int code = ws.getHttpCode()
+                    int code = ws.getHttpCode();
                     System.err.println("Error while establishing connection! Code: " + code + ", Response: " + ws.getLastResponse());
                     if (code == 401) {
                         System.err.println("Please check if your username and API token are valid!");

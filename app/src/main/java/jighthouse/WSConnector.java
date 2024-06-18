@@ -50,6 +50,39 @@ public class WSConnector extends Thread {
     }
 
     /**
+     * Method to test whether a connection was established.
+     * @return true if connection successful
+     * @throws InterruptedException
+     */
+    private boolean testConnection() throws InterruptedException {
+        int httpCode;
+        // Wait 1 second for initial handshake
+        for (int i=0; i<20; i++) {
+            sleep(50);
+            httpCode = ws.getHttpCode();
+            // handshake will usually get us '101: protocol changed'
+            if (httpCode == 101 || (httpCode >= 200 && httpCode < 300)) {
+                break;
+            } else if (httpCode >= 300) {
+                return false;
+            }
+        }
+        // Send test frame
+        if (sendTestImage()) {
+            // Wait for response
+            for (int i=0; i<10; i++) {
+                sleep(50);
+                httpCode = ws.getHttpCode();
+                // Code 2xx means we're all good
+                if (httpCode >= 200 && httpCode < 300) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Connect to Lighthouse server.
      * @return true on success and false if it fails.
      */
@@ -63,64 +96,24 @@ public class WSConnector extends Thread {
             this.ws = new JhWebsockClient(uri, headers);
             try {
                 ws.connect();
-                System.out.println("Websocket connected.");
-                return true;
-            } catch (WebsocketNotConnectedException e) {
+                if (testConnection()) {
+                    System.out.println("Authentification successful!");
+                    return true;
+                } else {
+                    System.err.println("Error: Could not connect to websocket! Code: " + ws.getHttpCode() + ", Response: " + ws.getLastResponse());
+                    if (ws.getHttpCode() == 401) {
+                        System.err.println("Please check if your API token is valid!");
+                    }
+                }
+            } catch (WebsocketNotConnectedException | InterruptedException e) {
                 System.err.println("Error: Could not connect to websocket!");
                 e.printStackTrace();
-                return false;
             }
         } catch (URISyntaxException ex) {
             System.err.println("Error: Invalid websocket URL given!");
             ex.printStackTrace();
-            return false;
         }
-    }
-
-    /**
-     * Send a payload to websocket server
-     * @param payl the payload
-     * @return true on success and false if it fails.
-     */
-    // private boolean sendPAYL(Object payl) {
-    //     if (isConnected && isRunning) {
-    //         try {
-    //             HashMap<String, Object> data = new HashMap<String, Object>();
-    //             data.put("PAYL", payl);
-    //             System.err.println("Making new request with tok "+token);
-    //             JhRequest msg = new JhRequest(0, username, token, data);
-    //             byte[] packagedData = msg.toByteArray();
-    //             if (packagedData != null) {
-    //                 ws.send(ByteBuffer.wrap(packagedData));
-    //             }
-    //             System.out.println(decodeMessage(packagedData));
-    //             return true;
-    //         } catch (IOException e) {
-    //             e.printStackTrace();
-    //         }
-    //     }
-    //     return false;
-    // }
-
-    /**
-     * Method purely meant for debugging purposes.
-     * 
-     * @param packagedData
-     * @return
-     */
-    public void printMessageFields(byte[] packedData) {
-        try {
-            MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(new ByteArrayInputStream(packedData));
-
-            if (unpacker.hasNext()) {
-                Value fieldName = unpacker.unpackValue();
-
-                System.out.println(fieldName.toString());
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return false;
     }
 
     /**
@@ -131,18 +124,37 @@ public class WSConnector extends Thread {
     private boolean sendImage(byte[] image) {
         if (isConnected && isRunning) {
             try {
-                System.err.println("Making new request with tok "+token);
-                System.err.println("Bytearr " + image + " ; length " + image.length);
+                // System.err.println("Making new request with tok "+token);
+                // System.err.println("Bytearr " + image + " ; length " + image.length);
                 JhRequest msg = new JhRequest(0, username, token, image);
                 byte[] packagedData = msg.toByteArray();
                 if (packagedData != null) {
                     ws.send(ByteBuffer.wrap(packagedData));
                 }
-                printMessageFields(packagedData);
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        return false;
+    }
+
+    /**
+     * Sends a test image encoded as byte[] as the payload.
+     * @param image
+     * @return
+     */
+    private boolean sendTestImage() {
+        byte[] image = new byte[1176];
+        try {
+            JhRequest msg = new JhRequest(0, username, token, image);
+            byte[] packagedData = msg.toByteArray();
+            if (packagedData != null) {
+                ws.send(ByteBuffer.wrap(packagedData));
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return false;
     }
@@ -155,7 +167,7 @@ public class WSConnector extends Thread {
             try {
                 ws.close();
             } catch (WebsocketNotConnectedException ex) {
-                System.err.println("WebSocket is not connected.");
+                System.err.println("Cannot disconnect: WebSocket is not connected!");
             }
         } else {
             System.err.println("WebSocket is not open.");
@@ -233,6 +245,10 @@ public class WSConnector extends Thread {
         if (this.isConnected) {
             disconnect();
         }
+        terminate();
+    }
+
+    private void terminate() {
         this.isRunning = false;
         setStatus(WSCStatus.TERMINATED);
     }

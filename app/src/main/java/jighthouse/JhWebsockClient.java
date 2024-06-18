@@ -20,6 +20,14 @@ public class JhWebsockClient extends WebSocketClient {
 	private int httpCode = 0;
 	private String lastResponse = "";
 
+	public int getHttpCode() {
+		return httpCode;
+	}
+
+	public String getLastResponse() {
+		return lastResponse;
+	}
+
 	public JhWebsockClient(URI serverUri, Map<String, String> headers) {
 		super(serverUri, new Draft_6455(), headers, 0);
 	}
@@ -31,8 +39,8 @@ public class JhWebsockClient extends WebSocketClient {
 	@Override
 	public void onOpen(ServerHandshake handshakedata) {
         System.out.println("WS connection to " + super.getURI().toString() + " opened.");
-        System.out.println("HTTP Status: " + handshakedata.getHttpStatus());
-        System.out.println("HTTP Status Message: " + handshakedata.getHttpStatusMessage());
+		httpCode = handshakedata.getHttpStatus();
+		lastResponse = handshakedata.getHttpStatusMessage();
 	}
 
 	@Override
@@ -65,8 +73,8 @@ public class JhWebsockClient extends WebSocketClient {
 				this.lastResponse = response;
             }
 
-            System.out.println("HTTP Code: " + httpCode);
-            System.out.println("Response: " + response);
+            //System.out.println("HTTP Code: " + httpCode);
+            //System.out.println("Response: " + response);
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error: " + e.getLocalizedMessage());

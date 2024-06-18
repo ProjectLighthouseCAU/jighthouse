@@ -3,10 +3,13 @@ package jighthouse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
+import java.util.Date;
 import java.nio.ByteBuffer;
+
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ServerHandshake;
+
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessageUnpacker;
 import org.msgpack.value.Value;
@@ -16,9 +19,14 @@ class JhWebsockClient extends WebSocketClient {
 
 	private int httpCode = 0;
 	private String lastResponse = "";
+	long timeStamp = System.currentTimeMillis();
 
 	public int getHttpCode() {
 		return httpCode;
+	}
+
+	public int millisSinceResponse() {
+		return (int) (System.currentTimeMillis() - timeStamp);
 	}
 
 	public String getLastResponse() {
@@ -38,6 +46,7 @@ class JhWebsockClient extends WebSocketClient {
         System.out.println("Websocket connection opened.");
 		httpCode = handshakedata.getHttpStatus();
 		lastResponse = handshakedata.getHttpStatusMessage();
+		timeStamp = System.currentTimeMillis();
 	}
 
 	@Override
@@ -48,6 +57,7 @@ class JhWebsockClient extends WebSocketClient {
 	@Override
 	public void onMessage(String message) {
 		System.out.println("WS Received message: " + message);
+		timeStamp = System.currentTimeMillis();
 	}
 
 	@Override
@@ -63,7 +73,7 @@ class JhWebsockClient extends WebSocketClient {
             int httpCode = vmap.get(new ImmutableStringValueImpl("RNUM")).asIntegerValue().toInt();
             Value responseValue = vmap.get(new ImmutableStringValueImpl("RESPONSE"));
 			this.httpCode = httpCode;
-
+			timeStamp = System.currentTimeMillis();
             String response = "";
             if (responseValue != null && responseValue.isStringValue()) {
                 response = responseValue.asStringValue().asString();

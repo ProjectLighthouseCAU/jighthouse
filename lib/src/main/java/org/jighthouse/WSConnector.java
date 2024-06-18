@@ -239,7 +239,11 @@ class WSConnector extends Thread {
             sendImage(image);
             timeSinceReq = 0;
 
-    
+            if (ws.millisSinceResponse() > (500 + 2 * waitPeriod)) {
+                System.err.println("Error: Server not responding! Please check your network connection.");
+                this.isRunning = false;
+            }
+
             // 3. Sleep depending on framerate, with small negative offset.
             // The offset prevents stuttering.
             if (waitPeriod > 2) {

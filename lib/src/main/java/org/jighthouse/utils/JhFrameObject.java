@@ -13,11 +13,22 @@ class JhFrameObject {
     /**
      * Constructor for a frame object.
      * @param img_id ID of frame
-     * @param img_data The actual image as byte
+     * @param img_data The actual image as byte[]
      */
     public JhFrameObject(int img_id, byte[] img_data) {
         this.id = img_id;
         this.buffer = img_data;
+
+    }
+
+    /**
+     * Constructor for a frame object.
+     * @param img_id ID of frame
+     * @param img_data The actual image as int[]
+     */
+    public JhFrameObject(int img_id, int[] img_data) {
+        this.id = img_id;
+        this.buffer = fromIntArray(img_data);
 
     }
 
@@ -39,6 +50,15 @@ class JhFrameObject {
     public JhFrameObject(int img_id, int[][][] img_data) {
         this.id = img_id;
         this.buffer = from3DIntArray(img_data);
+    }
+
+    private byte[] fromIntArray(int[] intArray) {
+        int arrSize = intArray.length;
+        byte[] byteArray = new byte[arrSize];
+        for (int i = 0; i < arrSize; i++) {
+            byteArray[i] = intToByte(intArray[i]);
+        }
+        return byteArray;
     }
 
     /**

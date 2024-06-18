@@ -1,12 +1,7 @@
 package jighthouse;
 
-//import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.msgpack.core.*;
-//import org.msgpack.value.*;
 
 /**
  * Class that models an outgoing message to be sent to the lighthouse.

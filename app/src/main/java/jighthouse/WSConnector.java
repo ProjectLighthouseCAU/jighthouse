@@ -1,6 +1,5 @@
 package jighthouse;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -8,16 +7,8 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
-
-//import org.msgpack.core.*;
-//import java.utiHashl.concurrent.BlockingQueue;
-
-//import org.java_websocket.client.*;
-//import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
-import org.msgpack.core.MessagePack;
-import org.msgpack.core.MessageUnpacker;
-import org.msgpack.value.Value;
+
 public class WSConnector extends Thread {
     // Attributes
     private String username;

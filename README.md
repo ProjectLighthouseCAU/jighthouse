@@ -92,7 +92,7 @@ For this to work your Jighthouse *must* be running.
 *Q: How often can I send a frame to the Lighthouse?*
 
 A: The standard framerate limit is set to **60 FPS**. This means that you can invoke the **sendFrame()** method every ~17 milliseconds.  
-  If you invoke it more often than that, in which case frames will be skipped.
+  If you invoke it more often than that, nothing bad will happen, but the additional frames will be skipped.
 
 *Q: But my animation would look really great at higher framerates. Is there a way to raise the framerate?*
 
@@ -102,26 +102,41 @@ myJighthouse.setFpsLimit(120); // Example for setting a framerate limit of 120 f
 ```
 If you want to set a custom fps limit, this should be done before starting/connection your JH, else this method will cause it to re-initialize the JH connection.
 
+### Stopping the Jighthouse
+When your program is done sending stuff to the Lighthouse, you should terminate the Jighthouse.
+```java
+myJighthouse.stop();
+```
 ### Example Code Snippet
+The following example will show randomly colored Pixels on the Lighthouse for 5 seconds:
 
 ```java
-private void run() {
-    // Setting name and token
-    String username = "myUserName";
-    String token    = "API-TOK_XXXX-XXXX-XXXX-XXXX-XXXX";
-
-    // Instantiate and run the Jighthouse
-    Jighthouse myJighthouse = new Jighthouse(username, token);
-    myJighthouse.start();
-
-    // Loop that sends frames
-    while(myJighthouse.isRunning()) {
-        // Make a new frame
-        byte[][][] frame = yourMethodForGeneratingAFrame();
-        // Use the JH to send generated frame to the lighthouse server
-        myJighthouse.sendFrame(frame);
-        // Wait for 17 ms
-        thread.sleep(17);
+    private byte[] randomColors(){
+        byte[] frame = new byte[1176];
+        ThreadLocalRandom.current().nextBytes(frame);
+        frame[1] = (byte) 127;
+        return frame;
     }
-}
+
+    private void run() throws InterruptedException {
+        // Setting name and token
+        String username = "myUsername";
+        String token    = "API-TOK_XXXX-XXXX-XXXX-XXXX-XXXX";
+    
+        // Instantiate and run the Jighthouse
+        Jighthouse myJighthouse = new Jighthouse(username, token);
+        myJighthouse.start();
+        Thread.sleep(500);
+    
+        // Loop that sends frames
+        for (int i = 0; i < 10; i++) {
+            // Make a new frame
+            byte[] frame = randomColors();
+            // Use the JH to send generated frame to the lighthouse server
+            myJighthouse.sendFrame(frame);
+            // Wait
+            Thread.sleep(500);
+        }
+        myJighthouse.stop();
+    }
 ```

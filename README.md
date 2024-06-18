@@ -34,8 +34,26 @@ This will tell your Jighthouse to connect to the Lighthouse servers.
 ### Frame/Image format
 There are three data formats which you can use for sending frames to the Lighthouse: 
 
-#### 1. byte[c][x][y]: A 3D array using Bytes 
-The java data type **byte** contains numbers from 0 to 255. This is convenient because we use a color depth of 8 bit (1 byte) per channel.  
+
+#### 1. int[c][x][y]: A 3D array using Integers
+The indices of the array are assinged as follows:
+- First index (c) contains the color: 0=Red, 1=Green, 2=Blue
+- Second index (x) contains the window column starting from the left: From 0=Leftmost to 13=Rightmost window
+- Third index (y) contains the window row starting from the top: From 0=14th Floor to 13=1st Floor.
+
+A frame for a 4x2 Lighthouse that shows a red horizontal stripe over a blue horizontal stripe would look like this:
+```java
+int[][][] exampleFrame = {
+    {{255,0,0},{255,0,0},{255,0,0},{255,0,0}},
+    {{0,0,255},{0,0,255},{0,0,255},{0,0,255}}
+}
+```
+
+#### 2. byte[c][x][y]: A 3D array using Bytes 
+The java data type **byte** contains numbers from -128 to 127, unlike the lighthouse, which will interpret it as an unsigned number, where 0 will be mapped to 0, 127 to 127 and -128 will be interpreted as 255.  
+To get the appropiate byte from an integer ranging from 0 to 255, you can simply use a cast `(byte) someIntValue`. But keep in mind that 256 would be interpreted as 0 again.  
+
+The indices of the array are assinged as follow:
 - First index (c) contains the color: 0=Red, 1=Green, 2=Blue
 - Second index (x) contains the window column starting from the left: From 0=Leftmost to 13=Rightmost window
 - Third index (y) contains the window row starting from the top: From 0=14th Floor to 13=1st Floor.
@@ -50,31 +68,20 @@ byte[][][] exampleFrame = {
 
 The frame you send to the Lighthouse *must* be exactly 3\*28\*14.
 
-#### 2. int[c][x][y]: A 3D array using Integers (not recommended)
-Instead if using a 3D array with bytes, you can also use the int data type. This is not recommended because internally it will converted into an byte array anyway. The conversion involves clipping to get rid of values outside the specified range and eats processing power.  
-It is much more efficient if you configure your program using the *byte* data type for colors from the beginning.
-
-A frame for a 4x2 Lighthouse that shows a red horizontal stripe over a blue horizontal stripe would look like this:
-```java
-int[][][] exampleFrame = {
-    {{255,0,0},{255,0,0},{255,0,0},{255,0,0}},
-    {{0,0,255},{0,0,255},{0,0,255},{0,0,255}}
-}
-```
-
 The indices and expected frame size are the same as for the previous method.
 
 #### 3. byte[]: A simple pre-encoded byte array  
-Instead of using the other two methods, you can also encode the byte array yourself.
-First we have a series of colors, then a series of window rows, then a series of window colums.
+This might be the hardest format to implement, but it is also the most efficient one since it can be directly sent to the server without re-encoding.
+
+Three of the indices are grouped as the color of a single pixel. Then the pixels are grouped a line of windows from left to right, then those are grouped into levels from top to bottom.
+
+Assuming that $i$ is your array index, $i\mod 3$ would be your color, $\frac{i}{3}\mod 14$ would be number of the window on the current floor and $\frac{i}{3\cdot 14}\mod 28$ would be the current floor.
 
 A frame for a 4x2 Lighthouse that shows a red horizontal stripe over a blue horizontal stripe would look like this:
 ```java
 byte[] exampleFrame = {
-    255,0,0,  0,0,255,  
-    255,0,0,  0,0,255,
-    255,0,0,  0,0,255,  
-    255,0,0,  0,0,255
+    255,0,0,  255,0,0,  255,0,0,  255,0,0,  
+    0,0,255,  0,0,255,  0,0,255,  0,0,255
 }
 ```
 

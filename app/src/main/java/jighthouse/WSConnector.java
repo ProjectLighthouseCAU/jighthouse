@@ -61,9 +61,9 @@ public class WSConnector extends Thread {
             sleep(50);
             httpCode = ws.getHttpCode();
             // handshake will usually get us '101: protocol changed'
-            if (httpCode == 101 || (httpCode >= 200 && httpCode < 300)) {
+            if (httpCode == 101 || (httpCode >= 200 && httpCode < 400)) {
                 break;
-            } else if (httpCode >= 300) {
+            } else if (httpCode >= 400) {
                 return false;
             }
         }
@@ -74,7 +74,7 @@ public class WSConnector extends Thread {
                 sleep(50);
                 httpCode = ws.getHttpCode();
                 // Code 2xx means we're all good
-                if (httpCode >= 200 && httpCode < 300) {
+                if (httpCode >= 200 && httpCode < 400) {
                     return true;
                 }
             }
@@ -101,8 +101,11 @@ public class WSConnector extends Thread {
                     this.isConnected = true;
                     return true;
                 } else {
-                    System.err.println("Error while establishing connection! Code: " + ws.getHttpCode() + ", Response: " + ws.getLastResponse());
-                    System.err.println("Please check if your username and API token are valid!");
+                    int code = ws.getHttpCode()
+                    System.err.println("Error while establishing connection! Code: " + code + ", Response: " + ws.getLastResponse());
+                    if (code == 401) {
+                        System.err.println("Please check if your username and API token are valid!");
+                    }
                 }
             } catch (WebsocketNotConnectedException | InterruptedException e) {
                 System.err.println("Error: Could not connect to websocket!");

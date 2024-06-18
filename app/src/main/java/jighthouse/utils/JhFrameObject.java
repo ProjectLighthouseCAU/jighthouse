@@ -1,4 +1,4 @@
-package jighthouse;
+package jighthouse.utils;
 
 /**
  * Class for wrapping and enqueueing images encoded as 3D-Int-Arrays.

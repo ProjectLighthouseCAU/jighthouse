@@ -1,4 +1,4 @@
-package jighthouse;
+package jighthouse.utils;
 
 public enum WSCStatus {
     READY,

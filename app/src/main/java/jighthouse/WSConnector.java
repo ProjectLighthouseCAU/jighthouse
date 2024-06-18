@@ -9,6 +9,10 @@ import java.util.Map;
 import java.util.Queue;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 
+import jighthouse.utils.JhFrameObject;
+import jighthouse.utils.JhRequest;
+import jighthouse.utils.WSCStatus;
+
 public class WSConnector extends Thread {
     // Attributes
     private String username;

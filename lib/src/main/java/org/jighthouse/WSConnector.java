@@ -22,6 +22,9 @@ class WSConnector extends Thread {
     private Queue<JhFrameObject> frameQueue;
     private Queue<WSCStatus> statusQueue;
     private JhWebsockClient ws;
+    // Stats
+    private int framesReceived = 0;
+    private int framesDisplayed = -1;
 
     /**
      * Create a new websocket client.
@@ -158,6 +161,13 @@ class WSConnector extends Thread {
         return false;
     }
 
+    private void printStats() {
+        int framesSkipped = framesReceived - framesDisplayed;
+        String stats = ("Frames received: " + framesReceived + " | Frames displayed: " + framesDisplayed
+                        + " | Frames skipped: " + framesSkipped + " (" + 100*framesSkipped/framesReceived + " %)");
+        System.out.println(stats);
+    }
+
     /**
      * Disconnects from the Lighthouse server.
      */
@@ -231,13 +241,15 @@ class WSConnector extends Thread {
                 if (frame.isTerminationFrame()) {
                     this.isRunning = false;
                     break;
-                }
+                } 
+                framesReceived++;
             }
             
             // 2. Send image, set isConnected to return val of sendPAYL
             image = frame.getImage();
             sendImage(image);
             timeSinceReq = 0;
+            framesDisplayed++;
 
             if (ws.millisSinceResponse() > (500 + 2 * waitPeriod)) {
                 System.err.println("Error: Server not responding! Please check your network connection.");
@@ -249,6 +261,11 @@ class WSConnector extends Thread {
             if (waitPeriod > 2) {
                 waitMillis(waitPeriod - 2);
             }
+        }
+
+
+        if (framesDisplayed > 0) {
+            printStats();
         }
 
         // 4. Disconnect from server

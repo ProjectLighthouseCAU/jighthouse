@@ -13,19 +13,20 @@ import org.msgpack.core.*;
  */
 public class JhRequest {
 
-    int REID;
-    String USER;
-    String TOKEN;
-    String VERB;
-    String[] PATH;
-    Map<String, Object> DATA;
+    private int REID;
+    private String USER;
+    private String TOKEN;
+    private String VERB;
+    private String[] PATH;
+    private byte[] PAYL;
+    public final static int PAYL_SIZE = 1176;
 
-    public JhRequest(int reid, String user, String token, HashMap<String, Object> data) {
+    public JhRequest(int reid, String user, String token, byte[] payload) {
         this.REID = reid;
         this.USER = user;
         this.TOKEN = token;
         this.VERB = "PUT";
-        this.DATA = data;
+        this.PAYL = payload;
     }
 
     public byte[] toByteArray() throws IOException {
@@ -38,7 +39,7 @@ public class JhRequest {
         packer.packString("USER");
         packer.packString(USER);
         packer.packString("TOKEN");
-        packer.packString(USER);
+        packer.packString(TOKEN);
         packer.packString("VERB");
         packer.packString("PUT");
         packer.packString("PATH");
@@ -46,10 +47,10 @@ public class JhRequest {
         packer.packString("user");
         packer.packString(USER);
         packer.packString("model");
-        packer.packString("META");
-        packer.packMapHeader(0);
         packer.packString("PAYL");
-        packer.packString(DATA.toString());
+        packer.packBinaryHeader(PAYL_SIZE);
+        packer.addPayload(PAYL, 0, PAYL_SIZE);
+        packer.close();
         return packer.toByteArray();
     }
 }

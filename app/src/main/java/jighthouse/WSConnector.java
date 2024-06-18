@@ -1,21 +1,23 @@
 package jighthouse;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
+
+//import org.msgpack.core.*;
+//import java.utiHashl.concurrent.BlockingQueue;
+
 //import org.java_websocket.client.*;
 //import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Queue; 
-//import java.util.concurrent.ConcurrentLinkedQueue; 
-//import org.msgpack.core.*;
-//import java.util.concurrent.BlockingQueue;
-
+import org.msgpack.core.MessagePack;
+import org.msgpack.core.MessageUnpacker;
+import org.msgpack.value.Value;
 public class WSConnector extends Thread {
     // Attributes
     private String username;
@@ -43,6 +45,8 @@ public class WSConnector extends Thread {
         this.frameQueue   = reqQueue;
         this.statusQueue  = statusQueue;
         this.waitPeriod   = framerate > 0 ? ((int) (1000 / framerate)) : 1;
+        this.isConnected  = false;
+        this.isRunning    = false;
     }
 
     /**
@@ -50,14 +54,24 @@ public class WSConnector extends Thread {
      * @return true on success and false if it fails.
      */
     private boolean connect() {
+        System.out.println("Connection to server...");
         try {
             URI uri = new URI(address);
             Map<String, String> headers = new HashMap<>();
             headers.put("Authorization", "Bearer " + token);
             headers.put("User", username);
             this.ws = new JhWebsockClient(uri, headers);
-            return true;
+            try {
+                ws.connect();
+                System.out.println("Websocket connected.");
+                return true;
+            } catch (WebsocketNotConnectedException e) {
+                System.err.println("Error: Could not connect to websocket!");
+                e.printStackTrace();
+                return false;
+            }
         } catch (URISyntaxException ex) {
+            System.err.println("Error: Invalid websocket URL given!");
             ex.printStackTrace();
             return false;
         }
@@ -65,20 +79,47 @@ public class WSConnector extends Thread {
 
     /**
      * Send a payload to websocket server
-     * @param data the payload
+     * @param payl the payload
      * @return true on success and false if it fails.
      */
-    private boolean sendPAYL(Object data) {
+    // private boolean sendPAYL(Object payl) {
+    //     if (isConnected && isRunning) {
+    //         try {
+    //             HashMap<String, Object> data = new HashMap<String, Object>();
+    //             data.put("PAYL", payl);
+    //             System.err.println("Making new request with tok "+token);
+    //             JhRequest msg = new JhRequest(0, username, token, data);
+    //             byte[] packagedData = msg.toByteArray();
+    //             if (packagedData != null) {
+    //                 ws.send(ByteBuffer.wrap(packagedData));
+    //             }
+    //             System.out.println(decodeMessage(packagedData));
+    //             return true;
+    //         } catch (IOException e) {
+    //             e.printStackTrace();
+    //         }
+    //     }
+    //     return false;
+    // }
+
+    /**
+     * Method purely meant for debugging purposes.
+     * 
+     * @param packagedData
+     * @return
+     */
+    public void printMessageFields(byte[] packedData) {
         try {
-            JhRequest msg = new JhRequest(0, username, token, null);
-            byte[] packagedData = msg.toByteArray();
-            if (packagedData != null) {
-                ws.send(ByteBuffer.wrap(packagedData));
+            MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(new ByteArrayInputStream(packedData));
+
+            if (unpacker.hasNext()) {
+                Value fieldName = unpacker.unpackValue();
+
+                System.out.println(fieldName.toString());
             }
-            return true;
+
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
@@ -88,7 +129,22 @@ public class WSConnector extends Thread {
      * @return
      */
     private boolean sendImage(byte[] image) {
-        return sendPAYL(image);
+        if (isConnected && isRunning) {
+            try {
+                System.err.println("Making new request with tok "+token);
+                System.err.println("Bytearr " + image + " ; length " + image.length);
+                JhRequest msg = new JhRequest(0, username, token, image);
+                byte[] packagedData = msg.toByteArray();
+                if (packagedData != null) {
+                    ws.send(ByteBuffer.wrap(packagedData));
+                }
+                printMessageFields(packagedData);
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
     /**

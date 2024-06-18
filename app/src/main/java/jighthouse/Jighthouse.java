@@ -104,6 +104,7 @@ public class Jighthouse {
             this.wsThread = new WSConnector(username, token, address, frameQueue, statusQueue, framerate);
             // Start thread
             this.wsThread.start();
+            System.out.println("Jighthouse running.");
         } else {
             System.err.println("ERROR: Jighthouse is already running!");
         }

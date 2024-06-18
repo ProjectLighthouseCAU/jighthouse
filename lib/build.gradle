@@ -48,6 +48,7 @@ tasks.named('test') {
 }
 
 tasks.named('jar') {    
+    archiveBaseName.set('jighthouse')
     manifest {
         attributes "Main-Class": "jighthouse.Jighthouse"
         attributes('Implementation-Title': project.name,

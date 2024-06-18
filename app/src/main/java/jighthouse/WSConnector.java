@@ -108,11 +108,11 @@ public class WSConnector extends Thread {
                 }
             } catch (WebsocketNotConnectedException | InterruptedException e) {
                 System.err.println("Error: Could not connect to websocket!");
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         } catch (URISyntaxException ex) {
             System.err.println("Error: Invalid websocket URL given!");
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
         this.isConnected = false;
         return false;

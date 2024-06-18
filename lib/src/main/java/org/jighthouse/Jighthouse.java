@@ -1,11 +1,6 @@
 package jighthouse;
 
-//import java.util.Queue; 
-//import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import jighthouse.utils.JhFrameObject;
-import jighthouse.utils.WSCStatus; 
 
 /**
  * 'Main' class to be used by external applications.

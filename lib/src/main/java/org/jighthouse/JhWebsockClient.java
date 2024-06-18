@@ -3,11 +3,8 @@ package jighthouse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
-//import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
-
 import org.java_websocket.client.WebSocketClient;
-//import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ServerHandshake;
 import org.msgpack.core.MessagePack;

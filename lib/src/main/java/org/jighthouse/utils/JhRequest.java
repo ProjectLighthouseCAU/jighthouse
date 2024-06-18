@@ -1,4 +1,4 @@
-package jighthouse.utils;
+package jighthouse;
 
 import java.io.IOException;
 import org.msgpack.core.*;
@@ -6,7 +6,7 @@ import org.msgpack.core.*;
 /**
  * Class that models an outgoing message to be sent to the lighthouse.
  */
-public class JhRequest {
+class JhRequest {
 
     private int REID;
     private String USER;

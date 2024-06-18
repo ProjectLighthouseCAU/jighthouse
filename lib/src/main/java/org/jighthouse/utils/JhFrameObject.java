@@ -1,10 +1,10 @@
-package jighthouse.utils;
+package jighthouse;
 
 /**
  * Class for wrapping and enqueueing images encoded as 3D-Int-Arrays.
  * 
  */
-public class JhFrameObject {
+class JhFrameObject {
     // ID flag
     private int id;
     // The actual image

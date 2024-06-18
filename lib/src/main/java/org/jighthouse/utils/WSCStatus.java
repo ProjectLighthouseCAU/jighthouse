@@ -1,6 +1,6 @@
-package jighthouse.utils;
+package jighthouse;
 
-public enum WSCStatus {
+enum WSCStatus {
     READY,
     RUNNING,
     TERMINATED,

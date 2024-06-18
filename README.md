@@ -3,7 +3,19 @@
 
 
 ## Installation
-*TODO: Write this*
+
+### Visual Studio Code
+
+In VSCode, you can simply copy the downloaded .jar file (jighthouse-X.Y.Z.jar) into the 'lib'-Folder located inside your Java project folder. When you installed the automatically recommended Java Extension pack, it should be found automatically afterwards.
+
+Now simply add the following line at the beginning of your class file:
+```java
+import jighthouse.Jighthouse;
+```
+
+### Eclipse
+
+*To be added...*
 
 ## How to use it
 
@@ -49,6 +61,8 @@ int[][][] exampleFrame = {
 }
 ```
 
+The frame you send to the Lighthouse have a size of 3\*28\*14.
+
 #### 2. byte[c][x][y]: A 3D array using Bytes 
 The java data type **byte** contains numbers from -128 to 127, unlike the lighthouse, which will interpret it as an unsigned number, where 0 will be mapped to 0, 127 to 127 and -128 will be interpreted as 255.  
 To get the appropiate byte from an integer ranging from 0 to 255, you can simply use a cast `(byte) someIntValue`. But keep in mind that 256 would be interpreted as 0 again.  
@@ -66,9 +80,7 @@ byte[][][] exampleFrame = {
 }
 ```
 
-The frame you send to the Lighthouse *must* be exactly 3\*28\*14.
-
-The indices and expected frame size are the same as for the previous method.
+The frame you send to the Lighthouse have a size of 3\*28\*14.
 
 #### 3. byte[]: A simple pre-encoded byte array  
 This might be the hardest format to implement, but it is also the most efficient one since it can be directly sent to the server without re-encoding.

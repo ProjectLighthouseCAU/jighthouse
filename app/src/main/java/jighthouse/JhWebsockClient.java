@@ -38,14 +38,14 @@ public class JhWebsockClient extends WebSocketClient {
 
 	@Override
 	public void onOpen(ServerHandshake handshakedata) {
-        System.out.println("WS connection to " + super.getURI().toString() + " opened.");
+        System.out.println("Websocket connection opened.");
 		httpCode = handshakedata.getHttpStatus();
 		lastResponse = handshakedata.getHttpStatusMessage();
 	}
 
 	@Override
 	public void onClose(int code, String reason, boolean remote) {
-		System.out.println("WS connection to " + super.getURI().toString() + " closed.");
+		System.out.println("Websocket connection closed.");
 	}
 
 	@Override

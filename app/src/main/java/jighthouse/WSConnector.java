@@ -87,7 +87,7 @@ public class WSConnector extends Thread {
      * @return true on success and false if it fails.
      */
     private boolean connect() {
-        System.out.println("Connection to server...");
+        System.out.println("Connecting to " + this.address + " ...");
         try {
             URI uri = new URI(address);
             Map<String, String> headers = new HashMap<>();
@@ -101,10 +101,8 @@ public class WSConnector extends Thread {
                     this.isConnected = true;
                     return true;
                 } else {
-                    System.err.println("Error: Could not connect to websocket! Code: " + ws.getHttpCode() + ", Response: " + ws.getLastResponse());
-                    if (ws.getHttpCode() == 401) {
-                        System.err.println("Please check if your API token is valid!");
-                    }
+                    System.err.println("Error while establishing connection! Code: " + ws.getHttpCode() + ", Response: " + ws.getLastResponse());
+                    System.err.println("Please check if your username and API token are valid!");
                 }
             } catch (WebsocketNotConnectedException | InterruptedException e) {
                 System.err.println("Error: Could not connect to websocket!");

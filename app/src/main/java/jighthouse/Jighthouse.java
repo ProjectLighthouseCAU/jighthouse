@@ -106,9 +106,10 @@ public class Jighthouse {
             this.wsThread = new WSConnector(username, token, address, frameQueue, statusQueue, framerate);
             // Start thread
             this.wsThread.start();
-            System.out.println("Starting Jighthouse...");
-        } else {
+        } else if (this.threadState == WSCStatus.RUNNING) {
             System.err.println("ERROR: Jighthouse is already running!");
+        } else {
+            System.err.println("ERROR: Jighthouse is not ready!");
         }
     }
 

@@ -10,7 +10,7 @@ In VSCode, you can simply copy the downloaded .jar file (jighthouse-X.Y.Z.jar) i
 
 Now simply add the following line at the beginning of your class file:
 ```java
-import jighthouse.Jighthouse;
+import org.jighthouse.Jighthouse;
 ```
 
 ### Eclipse

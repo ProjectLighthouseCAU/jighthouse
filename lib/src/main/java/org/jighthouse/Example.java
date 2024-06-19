@@ -1,4 +1,4 @@
-package jighthouse;
+package org.jighthouse;
 
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;

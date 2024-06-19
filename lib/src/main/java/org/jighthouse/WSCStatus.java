@@ -1,4 +1,4 @@
-package jighthouse;
+package org.jighthouse;
 
 enum WSCStatus {
     READY,

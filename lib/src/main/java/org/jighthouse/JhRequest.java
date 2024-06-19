@@ -1,4 +1,4 @@
-package jighthouse;
+package org.jighthouse;
 
 import java.io.IOException;
 import org.msgpack.core.*;

@@ -51,6 +51,28 @@ public class Jighthouse {
      * Address and fps limit are set to standard values.
      * @param username Name of the lighthouse user
      * @param token Access token of the current user
+     * @param framerate Framerate limit (0 for no limit)
+     */
+    public Jighthouse(String username, String token, double framerate) {
+        this.username     = username;
+        this.token        = token;
+        this.address      = "wss://lighthouse.uni-kiel.de/websocket";
+        this.framecounter = 0;
+        if (framerate > 180) {
+            this.framerate = 180;
+        } else if (framerate < 1) {
+            this.framerate = 1;
+        } else {
+            this.framerate = framerate;
+        }
+        this.statusQueue = new ConcurrentLinkedQueue<WSCStatus>();
+    }
+    
+    /**
+     * Constructor for Jighthouse class.
+     * Address and fps limit are set to standard values.
+     * @param username Name of the lighthouse user
+     * @param token Access token of the current user
      */
     public Jighthouse(String username, String token) {
         this.username     = username;
@@ -124,15 +146,15 @@ public class Jighthouse {
         if (this.threadState != WSCStatus.RUNNING) {
             stop();
             throw new IllegalStateException("ERROR: Cannot send frame when JH is not connected!");
-        } else if (image[0][0].length != 14) {
+        } else if (image.length != 14) {
             stop();
-            throw new IllegalArgumentException("Invalid Y dimension in frame[color][x][y]: expected 14, but got " + image.length);
+            throw new IllegalArgumentException("Invalid Y dimension in frame[y][x][color]: expected 14, but got " + image.length);
         } else if (image[0].length != 28) {
             stop();
-            throw new IllegalArgumentException("Invalid X dimension in frame[color][x][y]: expected 28, but got " + image[0].length);
-        } else if (image.length != 3) {
+            throw new IllegalArgumentException("Invalid X dimension in frame[y][x][color]: expected 28, but got " + image[0].length);
+        } else if (image[0][0].length != 3) {
             stop();
-            throw new IllegalArgumentException("Invalid color depth in frame[color][x][y]: expected 3, but got " + image[0][0].length);
+            throw new IllegalArgumentException("Invalid color depth in frame[y][x][color]: expected 3, but got " + image[0][0].length);
         }
         // Create and enqueue frame
         JhFrameObject frame = new JhFrameObject(framecounter, image);
@@ -151,15 +173,15 @@ public class Jighthouse {
         if (this.threadState != WSCStatus.RUNNING) {
             stop();
             throw new IllegalStateException("ERROR: Cannot send frame when JH is not connected!");
-        } else if (image[0][0].length != 14) {
+        } else if (image.length != 14) {
             stop();
-            throw new IllegalArgumentException("Invalid Y dimension in frame[color][x][y]: expected 14, but got " + image.length);
+            throw new IllegalArgumentException("Invalid Y dimension in frame[y][x][color]: expected 14, but got " + image.length);
         } else if (image[0].length != 28) {
             stop();
-            throw new IllegalArgumentException("Invalid X dimension in frame[color][x][y]: expected 28, but got " + image[0].length);
-        } else if (image.length != 3) {
+            throw new IllegalArgumentException("Invalid X dimension in frame[y][x][color]: expected 28, but got " + image[0].length);
+        } else if (image[0][0].length != 3) {
             stop();
-            throw new IllegalArgumentException("Invalid color depth in frame[color][x][y]: expected 3, but got " + image[0][0].length);
+            throw new IllegalArgumentException("Invalid color depth in frame[y][x][color]: expected 3, but got " + image[0][0].length);
         }
         // Create and enqueue frame
         JhFrameObject frame = new JhFrameObject(framecounter, image);

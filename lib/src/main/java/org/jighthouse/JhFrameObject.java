@@ -68,9 +68,9 @@ class JhFrameObject {
      */
     private byte[] from3DByteArray(byte[][][] byteArray3D) {
 
-        int depth   = byteArray3D.length;
+        int depth   = byteArray3D[0][0].length;
         int xLength = byteArray3D[0].length;
-        int yLength = byteArray3D[0][0].length;
+        int yLength = byteArray3D.length;
         int arrSize = yLength * xLength * depth;
 
         byte[] byteArray = new byte[arrSize];
@@ -79,7 +79,7 @@ class JhFrameObject {
             int c =  i % depth;
             int x = (i / depth) % xLength;
             int y = (i / (depth * xLength)) % yLength;
-            byteArray[i] = byteArray3D[c][x][y];
+            byteArray[i] = byteArray3D[y][x][c];
         }
         
         return byteArray;
@@ -92,9 +92,9 @@ class JhFrameObject {
      */
     private byte[] from3DIntArray(int[][][] intArray3D) {
 
-        int depth   = intArray3D.length;
+        int depth   = intArray3D[0][0].length;
         int xLength = intArray3D[0].length;
-        int yLength = intArray3D[0][0].length;
+        int yLength = intArray3D.length;
         int arrSize = yLength * xLength * depth;
 
         byte[] byteArray = new byte[arrSize];
@@ -103,7 +103,7 @@ class JhFrameObject {
             int c =  i % depth;
             int x = (i / depth) % xLength;
             int y = (i / (depth * xLength)) % yLength;
-            byteArray[i] = intToByte(intArray3D[c][x][y]);
+            byteArray[i] = intToByte(intArray3D[y][x][c]);
         }
         
         return byteArray;

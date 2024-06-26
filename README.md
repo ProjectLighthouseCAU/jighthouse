@@ -6,7 +6,7 @@
 
 ### Visual Studio Code
 
-In VSCode, you can simply copy the downloaded .jar file (jighthouse-X.Y.Z.jar) into the 'lib'-Folder located inside your Java project folder. When you installed the automatically recommended Java Extension pack, it should be found automatically afterwards.
+After downloading the supplied .jar (jighthouse-X.Y.Z.jar) file, copy it into the 'lib'-directory located inside your Java project folder. When the official Java extension pack is installed, the project will now reference it automatically if needed.
 
 Now simply add the following line at the beginning of your class file:
 ```java
@@ -15,7 +15,12 @@ import org.jighthouse.Jighthouse;
 
 ### Eclipse
 
-*To be added...*
+After downloading the supplied .jar (jighthouse-X.Y.Z.jar) file, copy it into the 'lib'-directory located inside your Java project folder, select "Build Path" and then "Configure Build Path". Then switch to the Libraries tab, click on "Add JARs" and find+select the jar file you just placed in the lib directory. 
+
+Now click on "OK" and add the following line at the beginning of your class file:
+```java
+import org.jighthouse.Jighthouse;
+```
 
 ## How to use it
 

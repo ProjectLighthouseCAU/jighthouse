@@ -47,11 +47,11 @@ This will tell your Jighthouse to connect to the Lighthouse servers.
 There are three data formats which you can use for sending frames to the Lighthouse: 
 
 
-#### 1. int[c][x][y]: A 3D array using Integers
+#### 1. int[y][x][c]: A 3D array using Integers
 The indices of the array are assinged as follows:
-- First index (c) contains the color: 0=Red, 1=Green, 2=Blue
+- First index (y) contains the window row starting from the top: From 0=14th Floor to 13=1st Floor.
 - Second index (x) contains the window column starting from the left: From 0=Leftmost to 13=Rightmost window
-- Third index (y) contains the window row starting from the top: From 0=14th Floor to 13=1st Floor.
+- Third index (c) contains the color: 0=Red, 1=Green, 2=Blue
 
 A frame for a 4x2 Lighthouse that shows a red horizontal stripe over a blue horizontal stripe would look like this:
 ```java
@@ -63,14 +63,14 @@ int[][][] exampleFrame = {
 
 The frame you send to the Lighthouse have a size of 3\*28\*14.
 
-#### 2. byte[c][x][y]: A 3D array using Bytes 
+#### 2. byte[y][x][c]: A 3D array using Bytes 
 The java data type **byte** contains numbers from -128 to 127, unlike the lighthouse, which will interpret it as an unsigned number, where 0 will be mapped to 0, 127 to 127 and -128 will be interpreted as 255.  
 To get the appropiate byte from an integer ranging from 0 to 255, you can simply use a cast `(byte) someIntValue`. But keep in mind that 256 would be interpreted as 0 again.  
 
 The indices of the array are assinged as follow:
-- First index (c) contains the color: 0=Red, 1=Green, 2=Blue
+- First index (y) contains the window row starting from the top: From 0=14th Floor to 13=1st Floor.
 - Second index (x) contains the window column starting from the left: From 0=Leftmost to 13=Rightmost window
-- Third index (y) contains the window row starting from the top: From 0=14th Floor to 13=1st Floor.
+- Third index (c) contains the color: 0=Red, 1=Green, 2=Blue
 
 A frame for a 4x2 Lighthouse that shows a red horizontal stripe over a blue horizontal stripe would look like this:
 ```java

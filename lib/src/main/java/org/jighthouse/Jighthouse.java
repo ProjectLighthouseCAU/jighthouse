@@ -210,6 +210,25 @@ public class Jighthouse {
     }
 
     /**
+     * Sends a new frame to the Lighthouse Server.
+     * @param image encoded as Y*X*color
+     */
+    public void sendFrame(int[] buffer) {
+        refreshStatus();
+        if (this.threadState != WSCStatus.RUNNING) {
+            throw new IllegalStateException("ERROR: Cannot send frame when JH is not connected!");
+        }
+        if (buffer.length != 1176) {
+            throw new IllegalArgumentException("Invalid image size: Expected 1176 bytes, but got "+ buffer.length);
+        }
+        // Create and enqueue frame
+        JhFrameObject frame = new JhFrameObject(framecounter, buffer);
+        this.frameQueue.add(frame);
+        // Increase counter for ID
+        this.framecounter += 1;
+    }
+
+    /**
      * Check if the Jighthouse is active and running.
      * @return running true if Jighthouse is running
      */

@@ -15,6 +15,7 @@ class WSConnector extends Thread {
     private String token;
     private String address;
     private int waitPeriod;
+    private int retryWhenNoResponse;
     // Flags
     private boolean isRunning;
     private boolean isConnected;
@@ -41,6 +42,7 @@ class WSConnector extends Thread {
         this.waitPeriod   = framerate > 0 ? ((int) (1000 / framerate)) : 1;
         this.isConnected  = false;
         this.isRunning    = false;
+        this.retryWhenNoResponse = 10;
     }
 
     private boolean gotValidHttpCode() {
@@ -219,6 +221,8 @@ class WSConnector extends Thread {
 
         JhFrameObject frame = JhFrameObject.getEmptyFrame();
 
+        int retry = retryWhenNoResponse;
+
         // Main loop
         while (this.isRunning && this.isConnected) {
             setStatus(WSCStatus.RUNNING);
@@ -252,8 +256,15 @@ class WSConnector extends Thread {
             framesDisplayed++;
 
             if (ws.millisSinceResponse() > (500 + 2 * waitPeriod)) {
-                System.err.println("Error: Server not responding! Please check your network connection.");
-                this.isRunning = false;
+                if (retry < 1) {
+                    System.err.println("Error: Server not responding! Please check your network connection.");
+                    this.isRunning = false;
+                } else {
+                    retry--;
+                    System.err.println("Error: Server not responding! Retrying ...");
+                }
+            } else {
+                retry = retryWhenNoResponse;
             }
 
             // 3. Sleep depending on framerate, with small negative offset.
